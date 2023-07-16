@@ -92,7 +92,7 @@ public class FriendsOnMapPlugin extends Plugin {
 			// Retrieve friends info from server
 			try {
 				HTTPRequest req = new HTTPRequest(new URL(config.friendsAPI()));
-				HTTPResponse resp = req.call(new JSONRequestParameters(payload), HTTPMethod.GET);
+				HTTPResponse resp = req.call(new JSONRequestParameters(payload), HTTPMethod.POST);
 				if (resp.code() != 200) {
 					client.addChatMessage(ChatMessageType.CONSOLE, "friends-error",
 							"Failed to retrieve friends from friends api [RC2]",

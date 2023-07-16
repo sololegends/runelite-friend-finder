@@ -20,8 +20,8 @@ dependencies {
 	compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
 
 	compileOnly 'org.projectlombok:lombok:1.18.20'
-	compileOnly(name: 'sl-utilities', group: 'com.sololegends', version: 'core-712e2d47'){transitive=false}
-	compileOnly(name: 'json', group: 'com.sololegends', version: 'v0.7.9')
+	implementation(name: 'sl-utilities', group: 'com.sololegends', version: 'core-712e2d47'){transitive=false}
+	implementation(name: 'json', group: 'com.sololegends', version: 'v0.7.9')
 	annotationProcessor 'org.projectlombok:lombok:1.18.20'
 
 	testImplementation 'junit:junit:4.12'
