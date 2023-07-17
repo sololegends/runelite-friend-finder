@@ -1,13 +1,10 @@
 plugins {
 	id 'java'
+	id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
 repositories {
 	mavenLocal()
-	maven {
-			url "https://gitlab.sololegends.com/api/v4/projects/98/packages/maven"
-			name "sl-gitlab-ext"
-	}
 	maven {
 		url = 'https://repo.runelite.net'
 	}
@@ -20,8 +17,6 @@ dependencies {
 	compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
 
 	compileOnly 'org.projectlombok:lombok:1.18.20'
-	implementation(name: 'sl-utilities', group: 'com.sololegends', version: 'core-712e2d47'){transitive=false}
-	implementation(name: 'json', group: 'com.sololegends', version: 'v0.7.9')
 	annotationProcessor 'org.projectlombok:lombok:1.18.20'
 
 	testImplementation 'junit:junit:4.12'
@@ -30,9 +25,17 @@ dependencies {
 }
 
 group = 'com.sololegends'
-version = '1.0-SNAPSHOT'
+project.version = sl_version
 
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 	options.release.set(11)
+}
+
+shadowJar {
+	from sourceSets.test.output
+	configurations = [project.configurations.testRuntimeClasspath]
+	manifest {
+		attributes "Main-Class": "com.sololegends.runelite.FriendsOnMapPluginTest"
+	}
 }

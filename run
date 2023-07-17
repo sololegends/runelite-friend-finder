@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Load the project properties
+if [ -f ./gradle.properties ]; then
+  . ./gradle.properties
+fi
+./gradlew shadowJar
+java -jar -ea build/libs/friend-finder-$sl_version-all.jar
