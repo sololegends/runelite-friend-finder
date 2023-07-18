@@ -48,6 +48,9 @@ if(project.hasProperty('ver')) {
 } else {
   project.version = sl_version
 }
+if(project.hasProperty('verp')) {
+  project.version = project.verp + "-" + project.version
+}
 
 task full(){dependsOn assemble}
 gradle.taskGraph.whenReady { taskGraph ->
@@ -71,11 +74,12 @@ gradle.taskGraph.whenReady { taskGraph ->
 }
 mainClassName = sl_mainclass
 
+
 publishing {
 	publications {
 		library(MavenPublication) {
 			groupId = 'com.sololegends'
-			artifactId = project.archiveBaseName
+			artifactId = sl_archivesBaseName
 			version = project.version
 			from components.java
 			pom {
