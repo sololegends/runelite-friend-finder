@@ -36,9 +36,9 @@ dependencies {
 group = 'com.sololegends'
 project.version = sl_version
 
-tasks.withType(JavaCompile) {
-	options.encoding = 'UTF-8'
-	options.release.set(11)
+compileJava {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 
