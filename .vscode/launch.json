@@ -1,0 +1,20 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "java",
+			"name": "WorldLocations",
+			"request": "launch",
+			"mainClass": "com.sololegends.runelite.helpers.WorldLocations",
+			"projectName": "friend-finder"
+		},
+		{
+			"type": "java",
+			"name": "Test Runelite",
+			"request": "launch",
+			"mainClass": "com.sololegends.runelite.FriendsOnMapPluginTest",
+			"projectName": "friend-finder",
+			"vmArgs": "-ea"
+		}
+	],
+}

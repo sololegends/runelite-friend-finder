@@ -10,8 +10,11 @@ public interface FriendsOnMapConfig extends Config {
 	@ConfigSection(name = "Styling", description = "Stylize it!", position = 10)
 	String styling_section = "styling";
 
+	@ConfigSection(name = "Debug", description = "Debugging", position = 30, closedByDefault = true)
+	String debug_section = "debug";
+
 	public static enum UpdateIntervalEnum {
-		SECONDS_1("1 Seconds", 1),
+		SECONDS_1("1 Second", 1),
 		SECONDS_2("2 Seconds", 2),
 		SECONDS_5("5 Seconds", 5),
 		SECONDS_10("10 Seconds", 10),
@@ -90,4 +93,21 @@ public interface FriendsOnMapConfig extends Config {
 	default int outlineSize() {
 		return 3;
 	}
+
+	// Debugging
+	@ConfigItem(position = 31, section = debug_section, keyName = "map_crosshair", name = "Map Crosshair", description = "Turns on the mouse crosshair rendering on the main map")
+	default boolean mapCrosshair() {
+		return false;
+	}
+
+	@ConfigItem(position = 32, section = debug_section, keyName = "map_grid", name = "Map Grid Lines", description = "Turns on the grid lines rendering on the main map")
+	default boolean mapGridLines() {
+		return false;
+	}
+
+	@ConfigItem(position = 33, section = debug_section, keyName = "map_areas", name = "Map Draw Areas", description = "Turns on drawing every sub area tracked on the map surfaces")
+	default boolean mapDrawAreas() {
+		return false;
+	}
+
 }

@@ -3,6 +3,7 @@ package com.sololegends.runelite;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.inject.Inject;
@@ -11,6 +12,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.inject.Provides;
 import com.sololegends.runelite.helpers.RemoteDataManager;
+import com.sololegends.runelite.overlay.OtherSurfacePlayersOverlay;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
@@ -29,6 +31,7 @@ import net.runelite.client.game.WorldService;
 import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.worldmap.*;
 import net.runelite.client.util.WorldUtil;
 import net.runelite.http.api.worlds.World;
@@ -72,16 +75,24 @@ public class FriendsOnMapPlugin extends Plugin {
 	@Inject
 	private RemoteDataManager remote;
 
+	@Inject
+	private OtherSurfacePlayersOverlay other_surface_overlay;
+
+	@Inject
+	private OverlayManager overlay_manager;
+
 	@Override
 	protected void startUp() throws Exception {
 		log.info("Starting Friend finder");
 		mouse.registerMouseListener(mouse_listener);
+		overlay_manager.add(other_surface_overlay);
 	}
 
 	@Override
 	protected void shutDown() throws Exception {
 		log.info("Stopping Friend finder!");
 		mouse.unregisterMouseListener(mouse_listener);
+		overlay_manager.remove(other_surface_overlay);
 	}
 
 	public void message(String msg) {
@@ -106,6 +117,10 @@ public class FriendsOnMapPlugin extends Plugin {
 
 	public boolean isCurrentWorld(int world) {
 		return client.getWorld() == world;
+	}
+
+	public Set<FriendMapPoint> currentPoints() {
+		return current_points;
 	}
 
 	public void focusFriendClick() {
@@ -200,18 +215,25 @@ public class FriendsOnMapPlugin extends Plugin {
 		int d_size = config.dotSize();
 		BufferedImage icon = new BufferedImage(d_size + 2, d_size + 2, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = (Graphics2D) icon.getGraphics();
+		drawIcon(off_world, translated, g, 1, 1);
+		return icon;
+	}
 
+	public Dimension drawIcon(boolean off_world, boolean translated, Graphics2D g, int x, int y) {
+		int d_size = config.dotSize();
+		Color oc = g.getColor();
 		Color owc = translated ? config.otherWorldColorLink() : config.otherWorldColor();
 		Color wc = translated ? config.dotColorLink() : config.dotColor();
 
 		g.setColor(off_world && !config.offWorldAsOutline() ? owc : wc);
-		g.fillOval(1, 1, d_size, d_size);
+		g.fillOval(x, y, d_size, d_size);
 		if (off_world && config.offWorldAsOutline()) {
 			g.setColor(owc);
 			g.setStroke(new BasicStroke(Math.max(2, config.outlineSize())));
-			g.drawOval(1, 1, d_size, d_size);
+			g.drawOval(x, y, d_size, d_size);
 		}
-		return icon;
+		g.setColor(oc);
+		return new Dimension(d_size, d_size);
 	}
 
 	@Subscribe

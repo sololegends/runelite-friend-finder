@@ -8,7 +8,6 @@ import javax.inject.Inject;
 
 import com.google.gson.*;
 import com.sololegends.runelite.*;
-
 import net.runelite.api.coords.WorldPoint;
 import okhttp3.*;
 
