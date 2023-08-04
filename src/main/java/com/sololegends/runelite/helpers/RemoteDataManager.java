@@ -8,6 +8,9 @@ import javax.inject.Inject;
 
 import com.google.gson.*;
 import com.sololegends.runelite.*;
+import com.sololegends.runelite.skills.Health;
+import com.sololegends.runelite.skills.Prayer;
+
 import net.runelite.api.coords.WorldPoint;
 import okhttp3.*;
 
@@ -73,15 +76,27 @@ public class RemoteDataManager {
 										new WorldPoint(f.get("x").getAsInt(), f.get("y").getAsInt(), f.get("z").getAsInt()),
 										plugin.getIcon(!plugin.isCurrentWorld(f.get("w").getAsInt()), false), f.get("name").getAsString(),
 										f.get("w").getAsInt());
+
 								wmp.setName(f.get("name").getAsString());
 								wmp.setTooltip(f.get("name").getAsString() + " -- World: " + f.get("w").getAsString());
 								wmp.setSnapToEdge(true);
+
+								// If health set
+								if (f.has("hm") && f.get("hm").getAsInt() != -1 && f.has("hM") && f.get("hM").getAsInt() != -1) {
+									wmp.setHealth(new Health(f.get("hm").getAsInt(), f.get("hM").getAsInt()));
+								}
+
+								// If prayer set
+								if (f.has("pm") && f.get("pm").getAsInt() != -1 && f.has("pM") && f.get("pM").getAsInt() != -1) {
+									wmp.setPrayer(new Prayer(f.get("pm").getAsInt(), f.get("pM").getAsInt()));
+								}
 
 								plugin.addPoint(wmp);
 							}
 						}
 					}
 				}
+				plugin.updatePanel();
 				plugin.updated(System.currentTimeMillis());
 				in_progress = false;
 			}

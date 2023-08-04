@@ -7,35 +7,37 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.*;
+import com.google.inject.Inject;
 
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 
 public class WorldLocations {
 
-	private static Set<WorldSurface> WORLD_AREAS = ConcurrentHashMap.newKeySet();
+	private Set<WorldSurface> WORLD_AREAS = ConcurrentHashMap.newKeySet();
 
 	// y and y2 are inverted because RS using a flipped y axis, this is for easy
 	// listing
-	public static WorldArea fromBounds(int x, int y2, int x2, int y) {
+	public WorldArea fromBounds(int x, int y2, int x2, int y) {
 		return new WorldArea(x, y, x2 - x, y2 - y, 0);
 	}
 
-	private static WorldSurface surface(String name, int eX, int eY, WorldArea... areas) {
+	private WorldSurface surface(String name, int eX, int eY, WorldArea... areas) {
 		return new WorldSurface(name, new WorldPoint(eX, eY, 0), areas);
 	}
 
-	public static Set<WorldSurface> getSurfaces() {
+	public Set<WorldSurface> getSurfaces() {
 		return new HashSet<WorldSurface>(WORLD_AREAS);
 	}
 
-	static {
+	@Inject
+	public WorldLocations() {
 		WORLD_AREAS.add(surface("RuneScape Surface", 00, 00, fromBounds(1052, 4132, 3940, 2396)));
 		// Ancient Cavern
 		WORLD_AREAS.add(surface("Ancient Cavern", 2511, 3508, fromBounds(1733, 5436, 1854, 5318)));
 		// Ardougne Underground
 		WorldSurface ardougne_ug = surface("Ardougne Underground", 2631, 3294, fromBounds(2513, 9854, 2748, 9599));
-		WORLD_AREAS.add(ardougne_ug);
+		// WORLD_AREAS.add(ardougne_ug);
 		WORLD_AREAS.add(surface("Clock Tower Dungeon", 2568, 3229, fromBounds(2560, 9663, 2623, 9600))
 				.setParent(ardougne_ug));
 		WORLD_AREAS.add(surface("Ardougne Rat Pits", 2560, 3320, fromBounds(2640, 9675, 2673, 9617))
@@ -56,7 +58,7 @@ public class WorldLocations {
 
 		// Asgarnia Ice Cave
 		WorldSurface asgarnia_ice_cave = surface("Asgarnia Ice Cave", 00, 00, fromBounds(2920, 9660, 3149, 9535));
-		WORLD_AREAS.add(asgarnia_ice_cave);
+		// WORLD_AREAS.add(asgarnia_ice_cave);
 		WORLD_AREAS.add(surface("Melzar's Maze Basement", 2923, 3250, fromBounds(2920, 9660, 2942, 9638))
 				.setParent(asgarnia_ice_cave));
 		WORLD_AREAS.add(surface("Port Sarim Rat Pits", 3017, 3232, fromBounds(3016, 9658, 3063, 9623))
@@ -72,7 +74,7 @@ public class WorldLocations {
 
 		// Dwarven Mines
 		WorldSurface dwarven_mines = surface("Dwarven Mines", 00, 00, fromBounds(2962, 9852, 3223, 9664));
-		WORLD_AREAS.add(dwarven_mines);
+		// WORLD_AREAS.add(dwarven_mines);
 		WORLD_AREAS.add(surface("Dwarven Mine North", 3017, 3450, fromBounds(2962, 9852, 3060, 9794))
 				.setParent(dwarven_mines));
 		WORLD_AREAS.add(surface("Dwarven Mine South", 3058, 3376, fromBounds(3031, 9794, 3062, 9756))
@@ -84,7 +86,7 @@ public class WorldLocations {
 
 		// Feldip Hills Underground
 		WorldSurface fh_under = surface("Feldip Hills Underground", 00, 00, fromBounds(1669, 9199, 2071, 8860));
-		WORLD_AREAS.add(fh_under);
+		// WORLD_AREAS.add(fh_under);
 		WORLD_AREAS.add(surface("Crumbling Tower Basement", 2130, 2994, fromBounds(1671, 9198, 1687, 9189))
 				.setParent(fh_under));
 		WORLD_AREAS.add(surface("Isle of Souls Dungeon", 3208, 2919, fromBounds(1793, 9149, 1853, 9093))
@@ -99,7 +101,7 @@ public class WorldLocations {
 
 		// Fossil Island Underground
 		WorldSurface fi_under = surface("Fossil Island Underground", 00, 00, fromBounds(3585, 10302, 3918, 10113));
-		WORLD_AREAS.add(fi_under);
+		// WORLD_AREAS.add(fi_under);
 		WORLD_AREAS.add(surface("Wyvern Cave (Task)", 3677, 3854, fromBounds(3585, 10302, 3645, 10242))
 				.setParent(fi_under));
 		WORLD_AREAS.add(surface("Wyvern Cave", 3745, 3779, fromBounds(3585, 10237, 3647, 10241))
@@ -117,7 +119,7 @@ public class WorldLocations {
 
 		// Karamja Underground
 		WorldSurface karamja_ug = surface("Karamja Underground", 00, 00, fromBounds(2560, 9662, 2940, 9375));
-		WORLD_AREAS.add(karamja_ug);
+		// WORLD_AREAS.add(karamja_ug);
 		WORLD_AREAS.add(surface("Crandor Dungeon", 2833, 3256, fromBounds(2827, 9661, 2866, 9546))
 				.setParent(karamja_ug));
 		WORLD_AREAS.add(surface("Jogre Dungeon", 2824, 3118, fromBounds(2822, 9532, 2939, 9414))
@@ -135,7 +137,7 @@ public class WorldLocations {
 
 		// Kebos Underground
 		WorldSurface kebos_ug = surface("Kebos Underground", 00, 00, fromBounds(1115, 10287, 1380, 9925));
-		WORLD_AREAS.add(kebos_ug);
+		// WORLD_AREAS.add(kebos_ug);
 		WORLD_AREAS.add(surface("Karuulm Slayer Dungeon", 1308, 3807, fromBounds(1117, 10285, 1379, 10129))
 				.setParent(kebos_ug));
 		WORLD_AREAS.add(surface("Hespori Patch", 1232, 3729, fromBounds(1175, 10079, 1191, 10063))
@@ -150,7 +152,7 @@ public class WorldLocations {
 
 		// Kharidian Desert Underground
 		WorldSurface kharidian_ug = surface("Kharidian Desert Underground", 00, 00, fromBounds(1244, 10212, 1956, 9692));
-		WORLD_AREAS.add(kharidian_ug);
+		// WORLD_AREAS.add(kharidian_ug);
 		WORLD_AREAS.add(surface("Kalphite Cave", 3319, 3122, fromBounds(3330, 9542, 3404, 9474))
 				.setParent(kharidian_ug));
 		WORLD_AREAS.add(surface("Kalphite Lair", 3226, 3108, fromBounds(3171, 9530, 3230, 9408))
@@ -160,7 +162,7 @@ public class WorldLocations {
 
 		// Kourend Underground
 		WorldSurface kourend_ug = surface("Kourend Underground", 00, 00, fromBounds(1347, 10173, 1877, 9793));
-		WORLD_AREAS.add(kourend_ug);
+		// WORLD_AREAS.add(kourend_ug);
 		WORLD_AREAS.add(surface("Kourend Underground", 1470, 3653, fromBounds(1600, 10111, 1729, 9979))
 				.setParent(kourend_ug));
 		WORLD_AREAS.add(surface("Chasm of Fire", 1433, 3670, fromBounds(1346, 10107, 1404, 9859))
@@ -188,7 +190,7 @@ public class WorldLocations {
 		WORLD_AREAS.add(surface("LMS Wild Varrock", 3138, 3635, fromBounds(3456, 6206, 3646, 6016)));
 
 		WorldSurface misc_ug = surface("Miscellania Underground", 00, 00, fromBounds(2012, 10468, 2916, 10076));
-		WORLD_AREAS.add(misc_ug);
+		// WORLD_AREAS.add(misc_ug);
 		WORLD_AREAS.add(surface("Miscellania / Etcetera Dungeon", 2619, 3865, fromBounds(2500, 10301, 2621, 10243))
 				.setParent(misc_ug));
 		WORLD_AREAS.add(surface("Ice Troll Cave", 2401, 3889, fromBounds(2375, 10302, 2426, 10241))
@@ -200,7 +202,7 @@ public class WorldLocations {
 
 		// Misthalin Underground
 		WorldSurface mist_ug = surface("Misthalin Underground", 00, 00, fromBounds(2972, 10084, 3364, 9372));
-		WORLD_AREAS.add(mist_ug);
+		// WORLD_AREAS.add(mist_ug);
 		WORLD_AREAS.add(surface("Edgeville Dungeon", 3115, 3452, fromBounds(3073, 9999, 3152, 9793))
 				.setParent(mist_ug));
 		WORLD_AREAS.add(surface("Varrock Sewers", 3241, 3428, fromBounds(3153, 9918, 3287, 9858))
@@ -244,11 +246,15 @@ public class WorldLocations {
 		WORLD_AREAS.add(surface("Ourania Altar", 2450, 3231, fromBounds(3009, 5630, 3070, 5569)));
 
 		// Stronghold of Security
-		WORLD_AREAS.add(surface("Stronghold of Security", 3080, 3421, fromBounds(1877, 5152, 1995, 4987)));
+		WORLD_AREAS.add(surface("Stronghold of Security", 3080, 3421,
+				fromBounds(1856, 5247, 1915, 5184),
+				fromBounds(1984, 5247, 2042, 5184),
+				fromBounds(2113, 5247, 2176, 5184),
+				fromBounds(2304, 5247, 2367, 5184)));
 
 		// Stronghold Underground
 		WorldSurface strong_ug = surface("Stronghold Underground", 00, 00, fromBounds(2140, 10084, 2596, 9628));
-		WORLD_AREAS.add(strong_ug);
+		// WORLD_AREAS.add(strong_ug);
 		WORLD_AREAS.add(surface("Kraken Cave", 2277, 3611, fromBounds(2242, 10044, 2301, 9987))
 				.setParent(strong_ug));
 		WORLD_AREAS.add(surface("Grand Tree Tunnels", 2462, 3496, fromBounds(2433, 9918, 2494, 9858))
@@ -276,16 +282,16 @@ public class WorldLocations {
 		// Tutorial Island
 		WORLD_AREAS.add(surface("Tutorial Island", 3127, 3037, fromBounds(1640, 6141, 1760, 6057)));
 
-		// Waterbirth Dungeon
-		WORLD_AREAS.add(surface("Waterbirth Dungeon", 00, 00,
-				fromBounds(2435, 10174, 2733, 9826), fromBounds(2613, 9790, 2718, 9646)));
+		// ! Waterbirth Dungeon
+		// WORLD_AREAS.add(surface("Waterbirth Dungeon", 00, 00,
+		// fromBounds(2435, 10174, 2733, 9826), fromBounds(2613, 9790, 2718, 9646)));
 
 		// TODO Wilderness Dungeons
 		WORLD_AREAS.add(surface("Wilderness Dungeons", 00, 00, fromBounds(2935, 10369, 3451, 10047)));
 
 		// Yanille Underground
 		WorldSurface yanille_ug = surface("Yanille Underground", 00, 00, fromBounds(2204, 9572, 2724, 9308));
-		WORLD_AREAS.add(yanille_ug);
+		// WORLD_AREAS.add(yanille_ug);
 		WORLD_AREAS.add(surface("Smoke Devils Dungeon", 2412, 3061, fromBounds(2347, 9468, 2426, 9415))
 				.setParent(yanille_ug));
 		WORLD_AREAS.add(surface("Wizard's Guild Basement", 2593, 3085, fromBounds(2582, 9493, 2594, 9484))
@@ -296,6 +302,9 @@ public class WorldLocations {
 
 		// Zanaris
 		WORLD_AREAS.add(surface("Zanaris", 3203, 3169, fromBounds(2370, 4478, 2493, 4355)));
+
+		// Temporos
+		WORLD_AREAS.add(surface("Temporos", 3136, 2841, fromBounds(12649, 26554478, 12699, 2605)));
 	}
 
 	public WorldSurface getWorldSurface(WorldPoint point) {
@@ -325,7 +334,13 @@ public class WorldLocations {
 		}
 
 		public boolean contains(WorldPoint point) {
-			return point.isInArea2D(areas);
+			for (WorldArea area : areas) {
+				if (area.getX() <= point.getX() && point.getX() <= area.getX() + area.getWidth()
+						&& area.getY() <= point.getY() && point.getY() <= area.getY() + area.getHeight()) {
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 

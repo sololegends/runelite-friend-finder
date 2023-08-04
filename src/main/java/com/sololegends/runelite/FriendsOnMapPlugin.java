@@ -7,18 +7,22 @@ import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.inject.Inject;
+import javax.swing.SwingUtilities;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.inject.Provides;
 import com.sololegends.runelite.helpers.RemoteDataManager;
 import com.sololegends.runelite.overlay.OtherSurfacePlayersOverlay;
+import com.sololegends.runelite.overlay.PlayerLocationOverlayPanel;
+import com.sololegends.runelite.panel.FriendsPanel;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.StatChanged;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.worldmap.WorldMap;
@@ -31,8 +35,11 @@ import net.runelite.client.game.WorldService;
 import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.ClientToolbar;
+import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.worldmap.*;
+import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.WorldUtil;
 import net.runelite.http.api.worlds.World;
 
@@ -48,11 +55,23 @@ public class FriendsOnMapPlugin extends Plugin {
 	private int hop_world_attempts = 0;
 	private int hop_world_attempts_max = 10;
 
+	// Player information
+	private volatile boolean info_updated = false;
+	private int health_last;
+	private int prayer_last;
+
+	// UI Elements
+	private FriendsPanel panel;
+	private NavigationButton side_panel_btn;
+
 	@Inject
 	private Client client;
 
 	@Inject
 	private ClientThread clientThread;
+
+	@Inject
+	private ClientToolbar clientToolbar;
 
 	@Inject
 	private FriendsOnMapConfig config;
@@ -79,6 +98,9 @@ public class FriendsOnMapPlugin extends Plugin {
 	private OtherSurfacePlayersOverlay other_surface_overlay;
 
 	@Inject
+	private PlayerLocationOverlayPanel player_location_overlay;
+
+	@Inject
 	private OverlayManager overlay_manager;
 
 	@Override
@@ -86,13 +108,30 @@ public class FriendsOnMapPlugin extends Plugin {
 		log.info("Starting Friend finder");
 		mouse.registerMouseListener(mouse_listener);
 		overlay_manager.add(other_surface_overlay);
+		overlay_manager.add(player_location_overlay);
+
+		panel = injector.getInstance(FriendsPanel.class);
+
+		final BufferedImage icon = ImageUtil.loadImageResource(FriendsOnMapPlugin.class, "panel_icon_sm.png");
+
+		side_panel_btn = NavigationButton.builder()
+				.tooltip("Friends On Map")
+				.icon(icon)
+				.priority(9)
+				.panel(panel)
+				.build();
+
+		// TODO: Enable when ready
+		clientToolbar.addNavigation(side_panel_btn);
 	}
 
 	@Override
 	protected void shutDown() throws Exception {
 		log.info("Stopping Friend finder!");
+		clientToolbar.removeNavigation(side_panel_btn);
 		mouse.unregisterMouseListener(mouse_listener);
 		overlay_manager.remove(other_surface_overlay);
+		overlay_manager.remove(player_location_overlay);
 	}
 
 	public void message(String msg) {
@@ -113,6 +152,10 @@ public class FriendsOnMapPlugin extends Plugin {
 	public void addPoint(FriendMapPoint fmp) {
 		map_point_manager.add(fmp);
 		current_points.add(fmp);
+	}
+
+	public void updatePanel() {
+		SwingUtilities.invokeLater(() -> panel.update());
 	}
 
 	public boolean isCurrentWorld(int world) {
@@ -248,7 +291,8 @@ public class FriendsOnMapPlugin extends Plugin {
 		} else if (hop_world != null) {
 			hop_world = null;
 		}
-		if (System.currentTimeMillis() - last_update > config.updateInterval().interval()) {
+		if (System.currentTimeMillis() - last_update > config.updateInterval().interval() || info_updated) {
+			// USE FRIENDS API
 			// Send player info to server
 			Player player = client.getLocalPlayer();
 			if (player == null) {
@@ -260,8 +304,13 @@ public class FriendsOnMapPlugin extends Plugin {
 			Friend[] friends = client.getFriendContainer().getMembers();
 			// Build the payload
 			JsonObject payload = new JsonObject();
+
 			payload.addProperty("name", player.getName());
 			payload.addProperty("x", player_location.getX());
+			payload.addProperty("hm", client.getBoostedSkillLevel(Skill.HITPOINTS));
+			payload.addProperty("hM", client.getRealSkillLevel(Skill.HITPOINTS));
+			payload.addProperty("pm", client.getBoostedSkillLevel(Skill.PRAYER));
+			payload.addProperty("pM", client.getBoostedSkillLevel(Skill.PRAYER));
 			payload.addProperty("y", player_location.getY());
 			payload.addProperty("z", player_location.getPlane());
 
@@ -276,6 +325,50 @@ public class FriendsOnMapPlugin extends Plugin {
 
 			// Retrieve friends info from server
 			remote.sendRequest(payload);
+		}
+	}
+
+	@Subscribe
+	public void onStatChanged(StatChanged statChanged) {
+		Skill skill = statChanged.getSkill();
+		int current_value = client.getBoostedSkillLevel(skill);
+		switch (skill) {
+			case AGILITY:
+			case ATTACK:
+			case CONSTRUCTION:
+			case COOKING:
+			case CRAFTING:
+			case DEFENCE:
+			case FARMING:
+			case FIREMAKING:
+			case FISHING:
+			case FLETCHING:
+			case HERBLORE:
+			case HUNTER:
+			case MAGIC:
+			case MINING:
+			case RANGED:
+			case RUNECRAFT:
+			case SLAYER:
+			case SMITHING:
+			case STRENGTH:
+			case THIEVING:
+			case WOODCUTTING:
+				break;
+			case HITPOINTS:
+				if (health_last != current_value) {
+					info_updated = true;
+					health_last = current_value;
+				}
+				break;
+			case PRAYER:
+				if (prayer_last != current_value) {
+					info_updated = true;
+					prayer_last = current_value;
+				}
+				break;
+			default:
+				break;
 		}
 	}
 

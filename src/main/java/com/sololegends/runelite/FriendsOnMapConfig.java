@@ -95,17 +95,12 @@ public interface FriendsOnMapConfig extends Config {
 	}
 
 	// Debugging
-	@ConfigItem(position = 31, section = debug_section, keyName = "map_crosshair", name = "Map Crosshair", description = "Turns on the mouse crosshair rendering on the main map")
-	default boolean mapCrosshair() {
+	@ConfigItem(position = 31, section = debug_section, keyName = "show_self_location_card", name = "Show your location card", description = "Shows your tracked location card at the top left of the game window")
+	default boolean yourLocation() {
 		return false;
 	}
 
-	@ConfigItem(position = 32, section = debug_section, keyName = "map_grid", name = "Map Grid Lines", description = "Turns on the grid lines rendering on the main map")
-	default boolean mapGridLines() {
-		return false;
-	}
-
-	@ConfigItem(position = 33, section = debug_section, keyName = "map_areas", name = "Map Draw Areas", description = "Turns on drawing every sub area tracked on the map surfaces")
+	@ConfigItem(position = 32, section = debug_section, keyName = "map_areas", name = "Map Draw Areas", description = "Turns on drawing every sub area tracked on the map surfaces")
 	default boolean mapDrawAreas() {
 		return false;
 	}

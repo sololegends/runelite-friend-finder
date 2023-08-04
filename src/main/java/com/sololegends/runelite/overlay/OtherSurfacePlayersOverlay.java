@@ -85,12 +85,6 @@ public class OtherSurfacePlayersOverlay extends Overlay {
 			y_offset += dim.getHeight() + 5;
 		}
 
-		if (config.mapGridLines()) {
-			drawMapGrid(g, 1, new Color(0, 0, 0, 0.1f));
-		}
-		if (config.mapCrosshair()) {
-			drawCrosshair(g, mouse, bounds);
-		}
 		if (config.mapDrawAreas()) {
 			drawAreas(g, worldMap);
 		}
@@ -102,7 +96,7 @@ public class OtherSurfacePlayersOverlay extends Overlay {
 	}
 
 	private void drawAreas(Graphics2D g, WorldMap map) {
-		Set<WorldSurface> surfaces = WorldLocations.getSurfaces();
+		Set<WorldSurface> surfaces = locations.getSurfaces();
 		Widget map_w = client.getWidget(WidgetInfo.WORLD_MAP_VIEW);
 
 		if (map_w == null) {
@@ -117,6 +111,7 @@ public class OtherSurfacePlayersOverlay extends Overlay {
 				WorldPoint end = new WorldPoint(a.getX() + a.getWidth(), a.getY() + a.getHeight(), 0);
 				Point draw_start = map_overlay.mapWorldPointToGraphicsPoint(start);
 				Point draw_end = map_overlay.mapWorldPointToGraphicsPoint(end);
+
 				if (draw_start == null || draw_end == null) {
 					continue;
 				}
