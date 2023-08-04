@@ -54,6 +54,8 @@ public class FriendsOnMapPlugin extends Plugin {
 	private net.runelite.api.World hop_world = null;
 	private int hop_world_attempts = 0;
 	private int hop_world_attempts_max = 10;
+	private long hop_world_last = 0;
+	private int hop_world_interval = 1_000;
 
 	// Player information
 	private volatile boolean info_updated = false;
@@ -184,7 +186,7 @@ public class FriendsOnMapPlugin extends Plugin {
 				if (isWithin(mouse_pos, point.getWorldPoint())) {
 					message_queue.add(
 							new ChatMessageBuilder()
-									.append("Switching to ")
+									.append("Attempting to switch to ")
 									.append(ChatColorType.HIGHLIGHT)
 									.append(point.friend)
 									.append(ChatColorType.NORMAL)
@@ -286,8 +288,15 @@ public class FriendsOnMapPlugin extends Plugin {
 			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "friend-finder",
 					msg, "Friend Finder Plugin", true);
 		}
-		if (hop_world != null && hop_world_attempts < hop_world_attempts_max) {
-			client.hopToWorld(hop_world);
+		if (hop_world != null && hop_world_attempts < hop_world_attempts_max
+				&& System.currentTimeMillis() - hop_world_last > hop_world_interval) {
+			hop_world_last = System.currentTimeMillis();
+			hop_world_attempts++;
+			if (client.getWorld() != hop_world.getId()) {
+				client.hopToWorld(hop_world);
+			} else {
+				hop_world = null;
+			}
 		} else if (hop_world != null) {
 			hop_world = null;
 		}
