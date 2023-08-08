@@ -4,5 +4,5 @@
 if [ -f ./gradle.properties ]; then
   . ./gradle.properties
 fi
-./gradlew shadowJar
-java -jar -ea build/libs/friend-finder-$sl_version-all.jar
+./gradlew full
+java -jar -ea build/libs/runelite-friend-finder-$sl_version.jar

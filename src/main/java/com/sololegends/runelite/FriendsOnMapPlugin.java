@@ -301,6 +301,7 @@ public class FriendsOnMapPlugin extends Plugin {
 			hop_world = null;
 		}
 		if (System.currentTimeMillis() - last_update > config.updateInterval().interval() || info_updated) {
+			info_updated = false;
 			// USE FRIENDS API
 			// Send player info to server
 			Player player = client.getLocalPlayer();
@@ -313,13 +314,13 @@ public class FriendsOnMapPlugin extends Plugin {
 			Friend[] friends = client.getFriendContainer().getMembers();
 			// Build the payload
 			JsonObject payload = new JsonObject();
-
 			payload.addProperty("name", player.getName());
+			payload.addProperty("id", player.getId());
 			payload.addProperty("x", player_location.getX());
 			payload.addProperty("hm", client.getBoostedSkillLevel(Skill.HITPOINTS));
 			payload.addProperty("hM", client.getRealSkillLevel(Skill.HITPOINTS));
 			payload.addProperty("pm", client.getBoostedSkillLevel(Skill.PRAYER));
-			payload.addProperty("pM", client.getBoostedSkillLevel(Skill.PRAYER));
+			payload.addProperty("pM", client.getRealSkillLevel(Skill.PRAYER));
 			payload.addProperty("y", player_location.getY());
 			payload.addProperty("z", player_location.getPlane());
 

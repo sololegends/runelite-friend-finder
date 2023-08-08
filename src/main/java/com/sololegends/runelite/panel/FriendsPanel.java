@@ -2,15 +2,15 @@ package com.sololegends.runelite.panel;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import com.google.inject.Inject;
-import com.sololegends.runelite.*;
+import com.sololegends.runelite.FriendMapPoint;
+import com.sololegends.runelite.FriendsOnMapPlugin;
 import com.sololegends.runelite.helpers.WorldLocations;
 
 import net.runelite.api.Skill;
@@ -61,6 +61,17 @@ public class FriendsPanel extends PluginPanel {
 		friends.revalidate();
 	}
 
+	public void prune() {
+		Set<String> panels = new HashSet<>(friend_components.keySet());
+		for (String s : panels) {
+			FriendPanel panel = (FriendPanel) friend_components.get(s);
+			if (panel.expired()) {
+				this.remove(panel);
+				friend_components.remove(s);
+			}
+		}
+	}
+
 	public void update() {
 		Set<FriendMapPoint> friend_points = plugin.currentPoints();
 		for (FriendMapPoint friend : friend_points) {
@@ -72,8 +83,9 @@ public class FriendsPanel extends PluginPanel {
 			}
 			friend_components.put(
 					friend.friend,
-					friends.add(new FriendPanel(friend, health_icon, prayer_icon)));
+					friends.add(new FriendPanel(this, friend, health_icon, prayer_icon)));
 		}
+		prune();
 		friends.revalidate();
 	}
 }
