@@ -66,8 +66,7 @@ public class FriendsPanel extends PluginPanel {
 		for (String s : panels) {
 			FriendPanel panel = (FriendPanel) friend_components.get(s);
 			if (panel.expired()) {
-				this.remove(panel);
-				friend_components.remove(s);
+				this.remove(friend_components.remove(s));
 			}
 		}
 	}

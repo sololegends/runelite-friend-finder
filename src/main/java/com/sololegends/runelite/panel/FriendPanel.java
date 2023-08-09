@@ -27,15 +27,16 @@ public class FriendPanel extends JPanel {
 	ProgressBar prayer = buildStatBar(new Prayer(0, 0));
 	TitledBorder border = new TitledBorder("");
 	final FriendsPanel parent;
+	final String name;
 	long updated = System.currentTimeMillis();
 
 	public FriendPanel(FriendsPanel parent, FriendMapPoint friend, ImageIcon h_icon, ImageIcon p_icon) {
 		border = new TitledBorder(
 				BorderFactory.createEtchedBorder(EtchedBorder.RAISED),
 				friend.friend);
+		name = friend.friend;
 		this.setBorder(border);
 		this.parent = parent;
-		updated = System.currentTimeMillis();
 
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
@@ -106,5 +107,16 @@ public class FriendPanel extends JPanel {
 		}
 
 		return bar;
+	}
+
+	public int hashCode() {
+		return -1;
+	}
+
+	public boolean equals(Object o) {
+		if (o instanceof FriendPanel && ((FriendPanel) o).name.equals(name)) {
+			return true;
+		}
+		return false;
 	}
 }

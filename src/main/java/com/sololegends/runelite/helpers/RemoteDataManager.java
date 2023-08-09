@@ -56,11 +56,11 @@ public class RemoteDataManager {
 					return;
 				}
 				JsonElement arr = new JsonParser().parse(resp.body().string());
+				// Remove old points
+				plugin.clearPoints();
 				if (arr.isJsonArray()) {
 					JsonArray my_friends = arr.getAsJsonArray();
 					if (my_friends != null && my_friends.size() > 0) {
-						// Remove old points
-						plugin.clearPoints();
 						// Add new points
 						Iterator<JsonElement> iter = my_friends.iterator();
 						while (iter.hasNext()) {
