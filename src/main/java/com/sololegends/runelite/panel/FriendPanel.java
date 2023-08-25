@@ -15,7 +15,7 @@ import net.runelite.client.ui.components.ProgressBar;
 public class FriendPanel extends JPanel {
 
 	// Time static
-	private static final long EXPIRE_THRESHOLD = 90_000;
+	private static final long EXPIRE_THRESHOLD = 70_000;
 
 	// Color static
 	private static final Color HEALTH_FG = new Color(0, 146, 54, 230);

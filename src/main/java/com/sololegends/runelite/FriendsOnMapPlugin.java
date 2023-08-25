@@ -21,8 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.StatChanged;
+import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.worldmap.WorldMap;
@@ -31,12 +30,12 @@ import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.WorldService;
 import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.ui.ClientToolbar;
-import net.runelite.client.ui.NavigationButton;
+import net.runelite.client.ui.*;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.worldmap.*;
 import net.runelite.client.util.ImageUtil;
@@ -58,6 +57,7 @@ public class FriendsOnMapPlugin extends Plugin {
 	private int hop_world_interval = 1_000;
 
 	// Player information
+	private volatile FriendMapPoint focus_on = null;
 	private volatile boolean info_updated = false;
 	private int health_last;
 	private int prayer_last;
@@ -151,7 +151,30 @@ public class FriendsOnMapPlugin extends Plugin {
 		current_points.clear();
 	}
 
+	public boolean alignLeft(int x) {
+		return client.getWorldMap().getWorldMapPosition().getX() < x;
+	}
+
+	public void removePoint(FriendMapPoint fmp) {
+		map_point_manager.remove(fmp);
+		current_points.remove(fmp);
+	}
+
 	public void addPoint(FriendMapPoint fmp) {
+		if (current_points.contains(fmp)) {
+			// Already here, just update it
+			for (FriendMapPoint fp : current_points) {
+				if (fp.equals(fmp)) {
+					fp.world = fmp.world;
+					fp.setHealth(fmp.getHealth());
+					fp.setPrayer(fmp.getPrayer());
+					fp.setWorldPoint(fmp.getWorldPoint());
+					fp.updated();
+					updateFriendPointIcon(fp);
+					return;
+				}
+			}
+		}
 		map_point_manager.add(fmp);
 		current_points.add(fmp);
 	}
@@ -256,11 +279,44 @@ public class FriendsOnMapPlugin extends Plugin {
 		hop_world_attempts = 0;
 	}
 
-	public BufferedImage getIcon(boolean off_world, boolean translated) {
+	public BufferedImage getIcon(boolean off_world, boolean translated, String label, boolean left) {
 		int d_size = config.dotSize();
 		BufferedImage icon = new BufferedImage(d_size + 2, d_size + 2, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = (Graphics2D) icon.getGraphics();
-		drawIcon(off_world, translated, g, 1, 1);
+
+		if (!config.alwaysShowName()) {
+			drawIcon(off_world, translated, g, 1, 1);
+			return icon;
+		}
+		// If labels always on
+
+		Color owc = translated ? config.otherWorldColorLink() : config.otherWorldColor();
+		Color wc = translated ? config.dotColorLink() : config.dotColor();
+
+		Font font = FontManager.getRunescapeFont().deriveFont(Font.BOLD, 13);
+		g.setFont(font);
+		FontMetrics fm = g.getFontMetrics();
+		int n_width = fm.stringWidth(label);
+		icon = new BufferedImage(icon.getWidth() + n_width + 10, icon.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		g = (Graphics2D) icon.getGraphics();
+		g.setFont(font);
+		g.setColor(new Color(0, 0, 0, 0.15f));
+		g.fillRect(0, 0, icon.getWidth(), icon.getHeight());
+		int x_off = d_size + 2 + 5;
+		if (left) {
+			drawIcon(off_world, translated, g, icon.getWidth() - d_size - 1, 1);
+			x_off = 0;
+		} else {
+			drawIcon(off_world, translated, g, 1, 1);
+		}
+		int s_y = (icon.getHeight() / 2) + (fm.getAscent() / 2);
+		int s_x = x_off;
+		// Shadow
+		g.setColor(owc);
+		g.drawString(label, s_x + 1, s_y + 1);
+		// Text
+		g.setColor(off_world && !config.offWorldAsOutline() ? owc : wc);
+		g.drawString(label, s_x, s_y);
 		return icon;
 	}
 
@@ -283,6 +339,15 @@ public class FriendsOnMapPlugin extends Plugin {
 
 	@Subscribe
 	public void onGameTick(GameTick event) {
+		if (focus_on != null) {
+			WorldMap map = client.getWorldMap();
+			if (map != null && map.getWorldMapRenderer().isLoaded()) {
+				map.setWorldMapPositionTarget(focus_on.getWorldPoint());
+				client.playSoundEffect(SoundEffectID.UI_BOOP);
+			}
+			// Clear regardless
+			focus_on = null;
+		}
 		String msg = null;
 		while ((msg = message_queue.poll()) != null) {
 			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "friend-finder",
@@ -335,6 +400,52 @@ public class FriendsOnMapPlugin extends Plugin {
 
 			// Retrieve friends info from server
 			remote.sendRequest(payload);
+		}
+	}
+
+	@Subscribe
+	public void onClientTick(ClientTick clientTick) {
+		for (FriendMapPoint mp : current_points) {
+			if (mp.expired()) {
+				removePoint(mp);
+				continue;
+			}
+			updateFriendPointIcon(mp);
+		}
+	}
+
+	public void focusOn(FriendMapPoint mp) {
+		focus_on = mp;
+	}
+
+	public void updateFriendPointIcon(FriendMapPoint mp) {
+		updateFriendPointIcon(mp, false);
+	}
+
+	public void updateFriendPointIcon(FriendMapPoint mp, boolean force) {
+		boolean align_left = mp.isCurrentlyEdgeSnapped() && alignLeft(mp.getWorldPoint().getX());
+		int ds = config.dotSize();
+		mp.setImagePoint(new Point(ds / 2, ds / 2));
+		if (mp.isCurrentlyEdgeSnapped()) {
+			mp.setImagePoint(null);
+		}
+		if (mp.left_align == align_left && !force) {
+			return;
+		}
+		mp.left_align = align_left;
+
+		mp.setImage(getIcon(!isCurrentWorld(mp.world),
+				false,
+				(mp.friend + " -- World: " + mp.world),
+				mp.left_align));
+	}
+
+	@Subscribe
+	public void onConfigChanged(ConfigChanged event) {
+		if (event.getKey().equals("always_show_name")) {
+			for (FriendMapPoint mp : current_points) {
+				updateFriendPointIcon(mp, true);
+			}
 		}
 	}
 

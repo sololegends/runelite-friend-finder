@@ -11,6 +11,7 @@ import com.sololegends.runelite.*;
 import com.sololegends.runelite.skills.Health;
 import com.sololegends.runelite.skills.Prayer;
 
+import net.runelite.api.Point;
 import net.runelite.api.coords.WorldPoint;
 import okhttp3.*;
 
@@ -56,8 +57,6 @@ public class RemoteDataManager {
 					return;
 				}
 				JsonElement arr = new JsonParser().parse(resp.body().string());
-				// Remove old points
-				plugin.clearPoints();
 				if (arr.isJsonArray()) {
 					JsonArray my_friends = arr.getAsJsonArray();
 					if (my_friends != null && my_friends.size() > 0) {
@@ -72,13 +71,31 @@ public class RemoteDataManager {
 							// Validate the friend object
 							if (f.has("x") && f.has("y") && f.has("z") &&
 									f.has("name") && f.has("w")) {
+
+								String tool_tip = f.get("name").getAsString() + " -- World: " + f.get("w").getAsString();
 								FriendMapPoint wmp = new FriendMapPoint(
 										new WorldPoint(f.get("x").getAsInt(), f.get("y").getAsInt(), f.get("z").getAsInt()),
-										plugin.getIcon(!plugin.isCurrentWorld(f.get("w").getAsInt()), false), f.get("name").getAsString(),
-										f.get("w").getAsInt());
+										plugin.getIcon(!plugin.isCurrentWorld(f.get("w").getAsInt()), false, tool_tip,
+												false),
+										f.get("name").getAsString(),
+										f.get("w").getAsInt()) {
+									@Override
+									public void onEdgeSnap() {
+										super.onEdgeSnap();
+										plugin.updateFriendPointIcon(this, true);
+									}
 
+									@Override
+									public void onEdgeUnsnap() {
+										super.onEdgeUnsnap();
+										plugin.updateFriendPointIcon(this, true);
+									}
+								};
+
+								int ds = config.dotSize();
+								wmp.setImagePoint(new Point(ds / 2, ds / 2));
 								wmp.setName(f.get("name").getAsString());
-								wmp.setTooltip(f.get("name").getAsString() + " -- World: " + f.get("w").getAsString());
+								wmp.setTooltip(tool_tip);
 								wmp.setSnapToEdge(true);
 
 								// If health set

@@ -94,6 +94,11 @@ public interface FriendsOnMapConfig extends Config {
 		return 3;
 	}
 
+	@ConfigItem(position = 18, section = styling_section, keyName = "always_show_name", name = "Name on World Map", description = "When set, friend's name and world will always be shows on the world map. On hover otherwise")
+	default boolean alwaysShowName() {
+		return false;
+	}
+
 	// Debugging
 	@ConfigItem(position = 31, section = debug_section, keyName = "show_self_location_card", name = "Show your location card", description = "Shows your tracked location card at the top left of the game window")
 	default boolean yourLocation() {

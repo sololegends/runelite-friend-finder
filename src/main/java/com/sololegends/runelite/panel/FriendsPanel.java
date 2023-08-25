@@ -2,6 +2,8 @@ package com.sololegends.runelite.panel;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -66,7 +68,7 @@ public class FriendsPanel extends PluginPanel {
 		for (String s : panels) {
 			FriendPanel panel = (FriendPanel) friend_components.get(s);
 			if (panel.expired()) {
-				this.remove(friend_components.remove(s));
+				friends.remove(friend_components.remove(s));
 			}
 		}
 	}
@@ -80,9 +82,32 @@ public class FriendsPanel extends PluginPanel {
 				panel.update(friend, locations.getWorldSurface(friend.getWorldPoint()));
 				continue;
 			}
+			FriendPanel panel = new FriendPanel(this, friend, health_icon, prayer_icon);
+			panel.addMouseListener(new MouseListener() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					plugin.focusOn(friend);
+				}
+
+				@Override
+				public void mousePressed(MouseEvent e) {
+				}
+
+				@Override
+				public void mouseReleased(MouseEvent e) {
+				}
+
+				@Override
+				public void mouseEntered(MouseEvent e) {
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+				}
+			});
 			friend_components.put(
 					friend.friend,
-					friends.add(new FriendPanel(this, friend, health_icon, prayer_icon)));
+					friends.add(panel));
 		}
 		prune();
 		friends.revalidate();

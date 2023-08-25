@@ -6,7 +6,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
-import java.util.Set;
+import java.util.*;
 
 import com.google.inject.Inject;
 import com.sololegends.runelite.*;
@@ -67,7 +67,14 @@ public class OtherSurfacePlayersOverlay extends Overlay {
 
 		String draw_tip = null;
 
-		for (FriendMapPoint f : plugin.currentPoints()) {
+		ArrayList<FriendMapPoint> points = new ArrayList<>(plugin.currentPoints());
+		points.sort(new Comparator<FriendMapPoint>() {
+			@Override
+			public int compare(FriendMapPoint o1, FriendMapPoint o2) {
+				return o1.friend.compareTo(o2.friend);
+			}
+		});
+		for (FriendMapPoint f : points) {
 			if (worldMap.getWorldMapData().surfaceContainsPosition(f.getWorldPoint().getX(), f.getWorldPoint().getY())) {
 				continue;
 			}
