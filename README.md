@@ -9,7 +9,7 @@ A simple plugin for showing your friends on your world map and visa versa
 - Configurable point colors and sizes
 - See your friends health and prayer statuses in a handy sidebar
 
-![image](docs/../docs/friend-on-map-example.png)
+![image](docs/friend-on-map-example.png)
 
 Your in-game location will be sent to an external server where it will be store as a single data point for all your friends to pull down and see. Your location is only visible to people on your RuneScape friends list, unless you have a person set as your friend they *cannot* see your location.  
 
