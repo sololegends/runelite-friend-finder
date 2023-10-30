@@ -12,93 +12,93 @@ import net.runelite.client.ui.overlay.worldmap.WorldMapPoint;
 
 public class FriendMapPoint extends WorldMapPoint {
 
-	public static final int LIFETIME = 70_000;
+  public static final int LIFETIME = 70_000;
 
-	public final String friend;
-	public int world;
-	public int region = -1;
-	public boolean left_align = false;
+  public final String friend;
+  public int world;
+  public int region = -1;
+  public boolean left_align = false;
 
-	private Health health = new Health(0, 0);
-	private Prayer prayer = new Prayer(0, 0);
-	private long updated = System.currentTimeMillis();
+  private Health health = new Health(0, 0);
+  private Prayer prayer = new Prayer(0, 0);
+  private long updated = System.currentTimeMillis();
 
-	public FriendMapPoint(WorldPoint worldPoint, BufferedImage image, String friend, int world) {
-		super(worldPoint, image);
-		this.friend = friend;
-		this.world = world;
-	}
+  public FriendMapPoint(WorldPoint worldPoint, BufferedImage image, String friend, int world) {
+    super(worldPoint, image);
+    this.friend = friend;
+    this.world = world;
+  }
 
-	public void updated() {
-		updated = System.currentTimeMillis();
-	}
+  public void updated() {
+    updated = System.currentTimeMillis();
+  }
 
-	public boolean expired() {
-		return System.currentTimeMillis() - updated > LIFETIME;
-	}
+  public boolean expired() {
+    return System.currentTimeMillis() - updated > LIFETIME;
+  }
 
-	public void setPrayer(Prayer prayer) {
-		this.prayer = prayer;
-	}
+  public void setPrayer(Prayer prayer) {
+    this.prayer = prayer;
+  }
 
-	public void setHealth(Health health) {
-		this.health = health;
-	}
+  public void setHealth(Health health) {
+    this.health = health;
+  }
 
-	public Prayer getPrayer() {
-		return prayer;
-	}
+  public Prayer getPrayer() {
+    return prayer;
+  }
 
-	public Health getHealth() {
-		return health;
-	}
+  public Health getHealth() {
+    return health;
+  }
 
-	public void setRegion(int region) {
-		this.region = region;
-	}
+  public void setRegion(int region) {
+    this.region = region;
+  }
 
-	public int getRegion() {
-		return region;
-	}
+  public int getRegion() {
+    return region;
+  }
 
-	@Override
-	public void onEdgeSnap() {
+  @Override
+  public void onEdgeSnap() {
     super.onEdgeSnap();
-		this.setJumpOnClick(true);
-	}
+    this.setJumpOnClick(true);
+  }
 
-	@Override
-	public void onEdgeUnsnap() {
+  @Override
+  public void onEdgeUnsnap() {
     super.onEdgeUnsnap();
-		this.setJumpOnClick(false);
-	}
+    this.setJumpOnClick(false);
+  }
 
-	public FriendMapPoint asOverworld() {
-		return new FriendMapPoint(
-				WorldPoint.getMirrorPoint(getWorldPoint(), true),
-				getImage(), friend, world);
-	}
+  public FriendMapPoint asOverworld() {
+    return new FriendMapPoint(
+        WorldPoint.getMirrorPoint(getWorldPoint(), true),
+        getImage(), friend, world);
+  }
 
-	public boolean matches(FriendMapPoint fmp) {
-		WorldPoint wp = getWorldPoint();
-		WorldPoint fwp = fmp.getWorldPoint();
-		return wp.getX() == fwp.getX() && wp.getY() == fwp.getY();
-	}
+  public boolean matches(FriendMapPoint fmp) {
+    WorldPoint wp = getWorldPoint();
+    WorldPoint fwp = fmp.getWorldPoint();
+    return wp.getX() == fwp.getX() && wp.getY() == fwp.getY();
+  }
 
-	public WorldSurface getLocation() {
-		if (getRegion() != -1) {
-			return WorldLocations.getWorldSurface(getRegion());
-		}
-		return WorldLocations.getWorldSurface(getWorldPoint());
-	}
+  public WorldSurface getLocation() {
+    if (getRegion() != -1) {
+      return WorldLocations.getWorldSurface(getRegion());
+    }
+    return WorldLocations.getWorldSurface(getWorldPoint());
+  }
 
-	@Override
-	public int hashCode() {
-		return -1;
-	}
+  @Override
+  public int hashCode() {
+    return -1;
+  }
 
-	@Override
-	public boolean equals(Object o) {
-		return o instanceof FriendMapPoint && ((FriendMapPoint) o).friend.equalsIgnoreCase(friend);
-	}
+  @Override
+  public boolean equals(Object o) {
+    return o instanceof FriendMapPoint && ((FriendMapPoint) o).friend.equalsIgnoreCase(friend);
+  }
 }

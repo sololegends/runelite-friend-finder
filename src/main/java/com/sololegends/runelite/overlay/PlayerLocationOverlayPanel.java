@@ -18,36 +18,36 @@ import net.runelite.client.ui.overlay.components.LineComponent;
 
 public class PlayerLocationOverlayPanel extends OverlayPanel {
 
-	private FriendsOnMapConfig config;
-	private Client client;
+  private FriendsOnMapConfig config;
+  private Client client;
 
-	@Inject
-	private PlayerLocationOverlayPanel(FriendsOnMapPlugin plugin, FriendsOnMapConfig config, Client client) {
-		super(plugin);
-		setPosition(OverlayPosition.TOP_LEFT);
-		setPriority(OverlayPriority.LOW);
-		this.config = config;
-		this.client = client;
-	}
+  @Inject
+  private PlayerLocationOverlayPanel(FriendsOnMapPlugin plugin, FriendsOnMapConfig config, Client client) {
+    super(plugin);
+    setPosition(OverlayPosition.TOP_LEFT);
+    setPriority(OverlayPriority.LOW);
+    this.config = config;
+    this.client = client;
+  }
 
-	@Override
-	public Dimension render(Graphics2D graphics) {
-		if (config.yourLocation()) {
-			WorldPoint player = client.getLocalPlayer().getWorldLocation();
-			LocalPoint local = client.getLocalPlayer().getLocalLocation();
-			int region_id = player.getRegionID();
-			if (client.isInInstancedRegion()) {
-				region_id = WorldPoint.fromLocalInstance(client, local).getRegionID();
-			}
-			WorldSurface s = WorldLocations.getWorldSurface(region_id);
-			if (s.name.equals("Unknown")) {
-				s = WorldLocations.getWorldSurface(player);
-			}
-			panelComponent.getChildren().add(LineComponent.builder()
-					.left(s.name)
-					.right("" + region_id)
-					.build());
-		}
-		return super.render(graphics);
-	}
+  @Override
+  public Dimension render(Graphics2D graphics) {
+    if (config.yourLocation()) {
+      WorldPoint player = client.getLocalPlayer().getWorldLocation();
+      LocalPoint local = client.getLocalPlayer().getLocalLocation();
+      int region_id = player.getRegionID();
+      if (client.isInInstancedRegion()) {
+        region_id = WorldPoint.fromLocalInstance(client, local).getRegionID();
+      }
+      WorldSurface s = WorldLocations.getWorldSurface(region_id);
+      if (s.name.equals("Unknown")) {
+        s = WorldLocations.getWorldSurface(player);
+      }
+      panelComponent.getChildren().add(LineComponent.builder()
+          .left(s.name)
+          .right("" + region_id)
+          .build());
+    }
+    return super.render(graphics);
+  }
 }
