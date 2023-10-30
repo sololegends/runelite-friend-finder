@@ -44,6 +44,7 @@ import net.runelite.client.util.WorldUtil;
 import net.runelite.http.api.worlds.World;
 
 @Slf4j
+@PluginDescriptor(name = "Friend Finder")
 public class FriendsOnMapPlugin extends Plugin {
 
   public static final int VARBIT_PRIVATE_CHAT = 13674;
