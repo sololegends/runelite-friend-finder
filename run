@@ -5,4 +5,4 @@ if [ -f ./gradle.properties ]; then
   . ./gradle.properties
 fi
 ./gradlew full
-java -jar -ea build/libs/runelite-friend-finder-$sl_version.jar --developer-mode
+java -jar -ea build/libs/runelite-friend-finder-$sl_version.jar "$@"

@@ -2,6 +2,8 @@ package com.sololegends.runelite;
 
 import java.awt.image.BufferedImage;
 
+import com.sololegends.runelite.helpers.WorldLocations;
+import com.sololegends.runelite.helpers.WorldLocations.WorldSurface;
 import com.sololegends.runelite.skills.Health;
 import com.sololegends.runelite.skills.Prayer;
 
@@ -14,6 +16,7 @@ public class FriendMapPoint extends WorldMapPoint {
 
 	public final String friend;
 	public int world;
+	public int region = -1;
 	public boolean left_align = false;
 
 	private Health health = new Health(0, 0);
@@ -50,13 +53,23 @@ public class FriendMapPoint extends WorldMapPoint {
 		return health;
 	}
 
+	public void setRegion(int region) {
+		this.region = region;
+	}
+
+	public int getRegion() {
+		return region;
+	}
+
 	@Override
 	public void onEdgeSnap() {
+    super.onEdgeSnap();
 		this.setJumpOnClick(true);
 	}
 
 	@Override
 	public void onEdgeUnsnap() {
+    super.onEdgeUnsnap();
 		this.setJumpOnClick(false);
 	}
 
@@ -72,6 +85,13 @@ public class FriendMapPoint extends WorldMapPoint {
 		return wp.getX() == fwp.getX() && wp.getY() == fwp.getY();
 	}
 
+	public WorldSurface getLocation() {
+		if (getRegion() != -1) {
+			return WorldLocations.getWorldSurface(getRegion());
+		}
+		return WorldLocations.getWorldSurface(getWorldPoint());
+	}
+
 	@Override
 	public int hashCode() {
 		return -1;
@@ -79,6 +99,6 @@ public class FriendMapPoint extends WorldMapPoint {
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof FriendMapPoint && ((FriendMapPoint) o).friend.equals(friend);
+		return o instanceof FriendMapPoint && ((FriendMapPoint) o).friend.equalsIgnoreCase(friend);
 	}
 }

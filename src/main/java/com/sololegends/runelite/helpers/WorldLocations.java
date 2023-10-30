@@ -7,31 +7,30 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.*;
-import com.google.inject.Inject;
+import com.sololegends.runelite.data.WorldRegions;
 
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 
 public class WorldLocations {
 
-	private Set<WorldSurface> WORLD_AREAS = ConcurrentHashMap.newKeySet();
+	private static final Set<WorldSurface> WORLD_AREAS = ConcurrentHashMap.newKeySet();
 
 	// y and y2 are inverted because RS using a flipped y axis, this is for easy
 	// listing
-	public WorldArea fromBounds(int x, int y2, int x2, int y) {
+	public static WorldArea fromBounds(int x, int y2, int x2, int y) {
 		return new WorldArea(x, y, x2 - x, y2 - y, 0);
 	}
 
-	private WorldSurface surface(String name, int eX, int eY, WorldArea... areas) {
+	public static WorldSurface surface(String name, int eX, int eY, WorldArea... areas) {
 		return new WorldSurface(name, new WorldPoint(eX, eY, 0), areas);
 	}
 
-	public Set<WorldSurface> getSurfaces() {
+	public static Set<WorldSurface> getSurfaces() {
 		return new HashSet<WorldSurface>(WORLD_AREAS);
 	}
 
-	@Inject
-	public WorldLocations() {
+	static {
 		WORLD_AREAS.add(surface("RuneScape Surface", 00, 00, fromBounds(1052, 4132, 3940, 2396)));
 		// Ancient Cavern
 		WORLD_AREAS.add(surface("Ancient Cavern", 2511, 3508, fromBounds(1733, 5436, 1854, 5318)));
@@ -307,10 +306,24 @@ public class WorldLocations {
 		WORLD_AREAS.add(surface("Temporos", 3136, 2841, fromBounds(12649, 26554478, 12699, 2605)));
 	}
 
-	public WorldSurface getWorldSurface(WorldPoint point) {
+	public static WorldSurface getWorldSurface(WorldPoint point) {
+		WorldSurface s = getWorldSurface(point.getRegionID());
+		if (!s.name.equals("Unknown")) {
+			return s;
+		}
 		for (WorldSurface surface : WORLD_AREAS) {
 			if (surface.contains(point)) {
 				return surface;
+			}
+		}
+		return new WorldSurface("Unknown", new WorldPoint(0, 0, 0), new WorldArea(0, 0, 0, 0, 0));
+	}
+
+	public static WorldSurface getWorldSurface(int region) {
+		if (region != -1) {
+			WorldSurface s = WorldRegions.fromRegion(region);
+			if (s != null) {
+				return s;
 			}
 		}
 		return new WorldSurface("Unknown", new WorldPoint(0, 0, 0), new WorldArea(0, 0, 0, 0, 0));

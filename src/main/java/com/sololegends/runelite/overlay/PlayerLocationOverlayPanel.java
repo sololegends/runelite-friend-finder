@@ -8,8 +8,10 @@ import javax.inject.Inject;
 import com.sololegends.runelite.FriendsOnMapConfig;
 import com.sololegends.runelite.FriendsOnMapPlugin;
 import com.sololegends.runelite.helpers.WorldLocations;
+import com.sololegends.runelite.helpers.WorldLocations.WorldSurface;
 
 import net.runelite.api.Client;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.ui.overlay.*;
 import net.runelite.client.ui.overlay.components.LineComponent;
@@ -17,27 +19,33 @@ import net.runelite.client.ui.overlay.components.LineComponent;
 public class PlayerLocationOverlayPanel extends OverlayPanel {
 
 	private FriendsOnMapConfig config;
-
-	@Inject
-	private WorldLocations locations;
-
-	@Inject
 	private Client client;
 
 	@Inject
-	private PlayerLocationOverlayPanel(FriendsOnMapPlugin plugin, FriendsOnMapConfig config) {
+	private PlayerLocationOverlayPanel(FriendsOnMapPlugin plugin, FriendsOnMapConfig config, Client client) {
 		super(plugin);
 		setPosition(OverlayPosition.TOP_LEFT);
 		setPriority(OverlayPriority.LOW);
 		this.config = config;
+		this.client = client;
 	}
 
 	@Override
 	public Dimension render(Graphics2D graphics) {
 		if (config.yourLocation()) {
 			WorldPoint player = client.getLocalPlayer().getWorldLocation();
+			LocalPoint local = client.getLocalPlayer().getLocalLocation();
+			int region_id = player.getRegionID();
+			if (client.isInInstancedRegion()) {
+				region_id = WorldPoint.fromLocalInstance(client, local).getRegionID();
+			}
+			WorldSurface s = WorldLocations.getWorldSurface(region_id);
+			if (s.name.equals("Unknown")) {
+				s = WorldLocations.getWorldSurface(player);
+			}
 			panelComponent.getChildren().add(LineComponent.builder()
-					.left(locations.getWorldSurface(player).name)
+					.left(s.name)
+					.right("" + region_id)
 					.build());
 		}
 		return super.render(graphics);

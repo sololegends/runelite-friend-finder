@@ -13,7 +13,6 @@ import javax.swing.border.EmptyBorder;
 import com.google.inject.Inject;
 import com.sololegends.runelite.FriendMapPoint;
 import com.sololegends.runelite.FriendsOnMapPlugin;
-import com.sololegends.runelite.helpers.WorldLocations;
 
 import net.runelite.api.Skill;
 import net.runelite.client.game.SkillIconManager;
@@ -24,7 +23,6 @@ import net.runelite.client.ui.components.DragAndDropReorderPane;
 public class FriendsPanel extends PluginPanel {
 
 	private final FriendsOnMapPlugin plugin;
-	private final WorldLocations locations;
 
 	private final JComponent friends = new DragAndDropReorderPane();
 	private final Map<String, Component> friend_components = new ConcurrentHashMap<>();
@@ -33,10 +31,8 @@ public class FriendsPanel extends PluginPanel {
 	private final ImageIcon prayer_icon;
 
 	@Inject
-	FriendsPanel(final FriendsOnMapPlugin plugin, final SkillIconManager icon_manager,
-			final WorldLocations locations) {
+	FriendsPanel(final FriendsOnMapPlugin plugin, final SkillIconManager icon_manager) {
 		this.plugin = plugin;
-		this.locations = locations;
 		health_icon = new ImageIcon(icon_manager.getSkillImage(Skill.HITPOINTS, true));
 		prayer_icon = new ImageIcon(icon_manager.getSkillImage(Skill.PRAYER, true));
 
@@ -79,7 +75,7 @@ public class FriendsPanel extends PluginPanel {
 			// Update
 			if (friend_components.containsKey(friend.friend)) {
 				FriendPanel panel = (FriendPanel) friend_components.get(friend.friend);
-				panel.update(friend, locations.getWorldSurface(friend.getWorldPoint()));
+				panel.update(friend, friend.getLocation());
 				continue;
 			}
 			FriendPanel panel = new FriendPanel(this, friend, health_icon, prayer_icon);

@@ -97,6 +97,9 @@ public class RemoteDataManager {
 								wmp.setName(f.get("name").getAsString());
 								wmp.setTooltip(tool_tip);
 								wmp.setSnapToEdge(true);
+								if (f.has("r")) {
+									wmp.setRegion(f.get("r").getAsInt());
+								}
 
 								// If health set
 								if (f.has("hm") && f.get("hm").getAsInt() != -1 && f.has("hM") && f.get("hM").getAsInt() != -1) {

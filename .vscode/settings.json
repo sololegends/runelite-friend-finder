@@ -38,6 +38,13 @@
 		"Yanille",
 		"Zanaris"
 	],
+	"java.checkstyle.configuration": "./checkstyle.xml",
+	"java.checkstyle.version": "10.2",
+	"[java]": {
+		"editor.insertSpaces": true,
+		"editor.detectIndentation": false
+	},
 	"java.compile.nullAnalysis.mode": "disabled",
-	"java.debug.settings.onBuildFailureProceed": true
+	"java.debug.settings.onBuildFailureProceed": true,
+	"ansible.python.interpreterPath": "c:\\Users\\Benjamin\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"
 }

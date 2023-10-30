@@ -2,8 +2,8 @@ package com.sololegends.runelite;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.inject.Inject;
@@ -20,6 +20,7 @@ import com.sololegends.runelite.panel.FriendsPanel;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.Point;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
@@ -46,7 +47,12 @@ import net.runelite.http.api.worlds.World;
 @PluginDescriptor(name = "Friend Finder")
 public class FriendsOnMapPlugin extends Plugin {
 
-	private HashSet<FriendMapPoint> current_points = new HashSet<>();
+	public static final int VARBIT_PRIVATE_CHAT = 13674;
+	public static final int VARBIT_PRIVATE_CHAT_ON = 0;
+	public static final int VARBIT_PRIVATE_CHAT_FRIENDS = 1;
+	public static final int VARBIT_PRIVATE_CHAT_OFF = 2;
+
+	private Set<FriendMapPoint> current_points = ConcurrentHashMap.newKeySet();
 	private LinkedBlockingQueue<String> message_queue = new LinkedBlockingQueue<>();
 
 	private long last_update = 0;
@@ -144,6 +150,7 @@ public class FriendsOnMapPlugin extends Plugin {
 		last_update = time;
 	}
 
+	@Deprecated
 	public void clearPoints() {
 		for (WorldMapPoint p : current_points) {
 			map_point_manager.remove(p);
@@ -169,12 +176,15 @@ public class FriendsOnMapPlugin extends Plugin {
 					fp.setHealth(fmp.getHealth());
 					fp.setPrayer(fmp.getPrayer());
 					fp.setWorldPoint(fmp.getWorldPoint());
+					fp.setRegion(fmp.getRegion());
 					fp.updated();
-					updateFriendPointIcon(fp);
+					updateFriendPointIcon(fp, true);
 					return;
 				}
 			}
+			return;
 		}
+		System.out.println("Adding: " + fmp);
 		map_point_manager.add(fmp);
 		current_points.add(fmp);
 	}
@@ -337,6 +347,10 @@ public class FriendsOnMapPlugin extends Plugin {
 		return new Dimension(d_size, d_size);
 	}
 
+	public boolean privateMode() {
+		return client.getVarbitValue(VARBIT_PRIVATE_CHAT) == VARBIT_PRIVATE_CHAT_OFF;
+	}
+
 	@Subscribe
 	public void onGameTick(GameTick event) {
 		if (focus_on != null) {
@@ -366,6 +380,10 @@ public class FriendsOnMapPlugin extends Plugin {
 			hop_world = null;
 		}
 		if (System.currentTimeMillis() - last_update > config.updateInterval().interval() || info_updated) {
+			// If friends chat set private don't send locations
+			if (privateMode()) {
+				return;
+			}
 			info_updated = false;
 			// USE FRIENDS API
 			// Send player info to server
@@ -373,7 +391,6 @@ public class FriendsOnMapPlugin extends Plugin {
 			if (player == null) {
 				// Set updated time
 				last_update = System.currentTimeMillis();
-				return;
 			}
 			WorldPoint player_location = player.getWorldLocation();
 			Friend[] friends = client.getFriendContainer().getMembers();
@@ -390,6 +407,13 @@ public class FriendsOnMapPlugin extends Plugin {
 			payload.addProperty("z", player_location.getPlane());
 
 			payload.addProperty("w", client.getWorld());
+			// Region of instance or world
+			LocalPoint local = player.getLocalLocation();
+			int region_id = player_location.getRegionID();
+			if (client.isInInstancedRegion()) {
+				region_id = WorldPoint.fromLocalInstance(client, local).getRegionID();
+			}
+			payload.addProperty("r", region_id);
 			JsonArray friends_json = new JsonArray();
 			if (player_location != null) {
 				for (Friend f : friends) {

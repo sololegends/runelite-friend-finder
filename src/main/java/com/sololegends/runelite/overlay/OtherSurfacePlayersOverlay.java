@@ -33,9 +33,6 @@ public class OtherSurfacePlayersOverlay extends Overlay {
 	private final FriendsOnMapConfig config;
 
 	@Inject
-	private WorldLocations locations;
-
-	@Inject
 	private WorldMapOverlay map_overlay;
 
 	@Inject
@@ -86,7 +83,7 @@ public class OtherSurfacePlayersOverlay extends Overlay {
 			if (mouse.getX() > x && mouse.getX() < x + dim.width
 					&& mouse.getY() > y && mouse.getY() < y + dim.height) {
 				// Draw tool tip stating world surface
-				WorldSurface loc = locations.getWorldSurface(f.getWorldPoint());
+				WorldSurface loc = f.getLocation();
 				draw_tip = loc.name;
 			}
 			y_offset += dim.getHeight() + 5;
@@ -103,7 +100,7 @@ public class OtherSurfacePlayersOverlay extends Overlay {
 	}
 
 	private void drawAreas(Graphics2D g, WorldMap map) {
-		Set<WorldSurface> surfaces = locations.getSurfaces();
+		Set<WorldSurface> surfaces = WorldLocations.getSurfaces();
 		Widget map_w = client.getWidget(WidgetInfo.WORLD_MAP_VIEW);
 
 		if (map_w == null) {
