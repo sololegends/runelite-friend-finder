@@ -338,12 +338,14 @@ public class FriendsOnMapPlugin extends Plugin {
     Color owc = translated ? config.otherWorldColorLink() : config.otherWorldColor();
     Color wc = translated ? config.dotColorLink() : config.dotColor();
 
-    g.setColor(off_world && !config.offWorldAsOutline() ? owc : wc);
-    g.fillOval(x, y, d_size, d_size);
     if (off_world && config.offWorldAsOutline()) {
       g.setColor(owc);
-      g.setStroke(new BasicStroke(Math.max(2, config.outlineSize())));
-      g.drawOval(x, y, d_size, d_size);
+      g.fillOval(x, y, d_size, d_size);
+      g.setColor(wc);
+      g.fillOval(x + config.outlineSize(), y + config.outlineSize(), d_size - config.outlineSize() * 2, d_size - config.outlineSize() * 2);
+    } else {
+      g.setColor(off_world && !config.offWorldAsOutline() ? owc : wc);
+      g.fillOval(x, y, d_size, d_size);
     }
     g.setColor(oc);
     return new Dimension(d_size, d_size);
