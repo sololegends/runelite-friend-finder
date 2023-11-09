@@ -307,17 +307,17 @@ public class FriendsOnMapPlugin extends Plugin {
     g.setFont(font);
     FontMetrics fm = g.getFontMetrics();
     int n_width = fm.stringWidth(label);
-    icon = new BufferedImage(icon.getWidth() + n_width + 10, icon.getHeight(), BufferedImage.TYPE_INT_ARGB);
+    icon = new BufferedImage(icon.getWidth() + n_width + 10, Math.max(icon.getHeight(), fm.getHeight()) + 2, BufferedImage.TYPE_INT_ARGB);
     g = (Graphics2D) icon.getGraphics();
     g.setFont(font);
     g.setColor(new Color(0, 0, 0, 0.15f));
     g.fillRect(0, 0, icon.getWidth(), icon.getHeight());
     int x_off = d_size + 2 + 5;
     if (left) {
-      drawIcon(off_world, translated, g, icon.getWidth() - d_size - 1, 1);
+      drawIcon(off_world, translated, g, icon.getWidth() - d_size - 1, icon.getHeight() / 2 - d_size / 2);
       x_off = 0;
     } else {
-      drawIcon(off_world, translated, g, 1, 1);
+      drawIcon(off_world, translated, g, 1, icon.getHeight() / 2 - d_size / 2);
     }
     int s_y = (icon.getHeight() / 2) + (fm.getAscent() / 2);
     int s_x = x_off;
