@@ -293,6 +293,7 @@ public class FriendsOnMapPlugin extends Plugin {
     int d_size = config.dotSize();
     BufferedImage icon = new BufferedImage(d_size + 2, d_size + 2, BufferedImage.TYPE_INT_ARGB);
     Graphics2D g = (Graphics2D) icon.getGraphics();
+    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
     if (!config.alwaysShowName()) {
       drawIcon(off_world, translated, g, 1, 1);
@@ -309,6 +310,7 @@ public class FriendsOnMapPlugin extends Plugin {
     int n_width = fm.stringWidth(label);
     icon = new BufferedImage(icon.getWidth() + n_width + 10, Math.max(icon.getHeight(), fm.getHeight()) + 2, BufferedImage.TYPE_INT_ARGB);
     g = (Graphics2D) icon.getGraphics();
+    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     g.setFont(font);
     g.setColor(new Color(0, 0, 0, 0.15f));
     g.fillRect(0, 0, icon.getWidth(), icon.getHeight());
