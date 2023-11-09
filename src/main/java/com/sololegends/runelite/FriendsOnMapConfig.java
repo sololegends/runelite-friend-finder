@@ -55,6 +55,11 @@ public interface FriendsOnMapConfig extends Config {
     return UpdateIntervalEnum.SECONDS_2;
   }
 
+  @ConfigItem(position = 3, section = "General", keyName = "show_sidebar_icon", name = "Show icon in sidebar", description = "Whether to display the Friends On Map sidebar icon")
+  default boolean showSidebarIcon() {
+    return true;
+  }
+
   // STYLING CONFIGURATION
 
   @ConfigItem(position = 11, section = styling_section, keyName = "style_dot_color", name = "Dot Color", description = "What color the dot is for your friends on the main map")
