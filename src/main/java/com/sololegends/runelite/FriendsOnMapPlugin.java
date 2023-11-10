@@ -129,7 +129,6 @@ public class FriendsOnMapPlugin extends Plugin {
         .panel(panel)
         .build();
 
-    // TODO: Enable when ready
     if (config.showSidebarIcon()) {
       clientToolbar.addNavigation(side_panel_btn);
     }
@@ -472,7 +471,7 @@ public class FriendsOnMapPlugin extends Plugin {
       for (FriendMapPoint mp : current_points) {
         updateFriendPointIcon(mp, true);
       }
-    } else if (event.getKey().equals("show_sidebar_icon")) {
+    } else if (event.getKey().equals("enable_sidebar")) {
       if (config.showSidebarIcon()) {
         clientToolbar.addNavigation(side_panel_btn);
       } else {

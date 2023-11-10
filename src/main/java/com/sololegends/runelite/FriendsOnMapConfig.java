@@ -55,7 +55,7 @@ public interface FriendsOnMapConfig extends Config {
     return UpdateIntervalEnum.SECONDS_2;
   }
 
-  @ConfigItem(position = 3, section = "General", keyName = "show_sidebar_icon", name = "Show icon in sidebar", description = "Whether to display the Friends On Map sidebar icon")
+  @ConfigItem(position = 3, section = "General", keyName = "enable_sidebar", name = "Enable Sidebar", description = "Whether to enable the Friends On Map sidebar")
   default boolean showSidebarIcon() {
     return true;
   }
