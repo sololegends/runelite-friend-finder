@@ -120,4 +120,7 @@ public interface FriendsOnMapConfig extends Config {
     return false;
   }
 
+  @ConfigItem(keyName = "fake_friends", name = "", description = "")
+  void fakeFriends(boolean fake_friends);
+
 }

@@ -113,6 +113,9 @@ public class FriendsOnMapPlugin extends Plugin {
 
   @Override
   protected void startUp() throws Exception {
+    // ! Always reset this one to false
+    config.fakeFriends(false);
+
     log.info("Starting Friend finder");
     mouse.registerMouseListener(mouse_listener);
     overlay_manager.add(other_surface_overlay);
