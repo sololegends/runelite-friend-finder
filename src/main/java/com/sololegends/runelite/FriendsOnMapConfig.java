@@ -55,6 +55,11 @@ public interface FriendsOnMapConfig extends Config {
     return UpdateIntervalEnum.SECONDS_2;
   }
 
+  @ConfigItem(position = 3, section = "General", keyName = "enable_sidebar", name = "Enable Sidebar", description = "Whether to enable the Friends On Map sidebar")
+  default boolean showSidebarIcon() {
+    return true;
+  }
+
   // STYLING CONFIGURATION
 
   @ConfigItem(position = 11, section = styling_section, keyName = "style_dot_color", name = "Dot Color", description = "What color the dot is for your friends on the main map")
@@ -107,6 +112,11 @@ public interface FriendsOnMapConfig extends Config {
 
   @ConfigItem(position = 32, section = debug_section, keyName = "map_areas", name = "Map Draw Areas", description = "Turns on drawing every sub area tracked on the map surfaces")
   default boolean mapDrawAreas() {
+    return false;
+  }
+
+  @ConfigItem(position = 33, section = debug_section, keyName = "fake_friends", name = "Add Fake Friends", description = "Adds some fake friends for debugging when you have no friends")
+  default boolean fakeFriends() {
     return false;
   }
 

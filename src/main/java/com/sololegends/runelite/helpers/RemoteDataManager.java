@@ -2,7 +2,7 @@ package com.sololegends.runelite.helpers;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Iterator;
+import java.util.*;
 
 import javax.inject.Inject;
 
@@ -18,6 +18,8 @@ import okhttp3.*;
 public class RemoteDataManager {
 
   private volatile boolean in_progress = false;
+  private List<FriendMapPoint> FAKE_FRIENDS = new ArrayList<>();
+  private Random rand = new Random();
 
   @Inject
   private FriendsOnMapPlugin plugin;
@@ -115,6 +117,52 @@ public class RemoteDataManager {
               }
             }
           }
+        }
+        // * If we need to render in some fake friends
+        if (config.fakeFriends()) {
+          int x = 1052, y2 = 4132, x2 = 3940, y = 2396;
+          // Generate a surface world wo
+          if (FAKE_FRIENDS.size() == 0) {
+            // Generate some friends
+            int count = rand.nextInt(15) + 5;
+            for (int i = 0; i < count; i++) {
+              String name = "Fake Friend #" + i;
+              String tool_tip = name + " -- World: 000";
+              FriendMapPoint fmp = new FriendMapPoint(
+                  new WorldPoint(rand.nextInt(x2 - x) + x, rand.nextInt(y2 - y) + y, 0),
+                  plugin.getIcon(!plugin.isCurrentWorld(0), false, tool_tip,
+                      false),
+                  name, 0);
+              int ds = config.dotSize();
+              fmp.setImagePoint(new Point(ds / 2, ds / 2));
+              fmp.setName(name);
+              fmp.setTooltip(tool_tip);
+              fmp.setSnapToEdge(true);
+              FAKE_FRIENDS.add(fmp);
+            }
+          }
+          // Process moving those friends around a bit
+          for (FriendMapPoint mp : FAKE_FRIENDS) {
+            WorldPoint wp = mp.getWorldPoint();
+            int nx = wp.getX() + (rand.nextInt(20) - 10);
+            if (nx < x) {
+              nx = x;
+            }
+            if (nx > x2) {
+              nx = x2;
+            }
+            int ny = wp.getY() + (rand.nextInt(20) - 10);
+            if (ny < y) {
+              ny = y;
+            }
+            if (ny > y2) {
+              ny = y2;
+            }
+            mp.setWorldPoint(new WorldPoint(nx, ny, wp.getPlane()));
+            plugin.addPoint(mp);
+          }
+        } else {
+          FAKE_FRIENDS.clear();
         }
         plugin.updatePanel();
         plugin.updated(System.currentTimeMillis());
