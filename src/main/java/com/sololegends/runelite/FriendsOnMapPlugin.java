@@ -309,7 +309,8 @@ public class FriendsOnMapPlugin extends Plugin {
     g.setFont(font);
     FontMetrics fm = g.getFontMetrics();
     int n_width = fm.stringWidth(label);
-    icon = new BufferedImage(icon.getWidth() + n_width + 10, Math.max(icon.getHeight(), fm.getHeight()) + 2, BufferedImage.TYPE_INT_ARGB);
+    icon = new BufferedImage(icon.getWidth() + n_width + 10, Math.max(icon.getHeight(), fm.getHeight()) + 2,
+        BufferedImage.TYPE_INT_ARGB);
     g = (Graphics2D) icon.getGraphics();
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     g.setFont(font);
@@ -343,7 +344,8 @@ public class FriendsOnMapPlugin extends Plugin {
       g.setColor(owc);
       g.fillOval(x, y, d_size, d_size);
       g.setColor(wc);
-      g.fillOval(x + config.outlineSize(), y + config.outlineSize(), d_size - config.outlineSize() * 2, d_size - config.outlineSize() * 2);
+      g.fillOval(x + config.outlineSize(), y + config.outlineSize(), d_size - config.outlineSize() * 2,
+          d_size - config.outlineSize() * 2);
     } else {
       g.setColor(off_world && !config.offWorldAsOutline() ? owc : wc);
       g.fillOval(x, y, d_size, d_size);
