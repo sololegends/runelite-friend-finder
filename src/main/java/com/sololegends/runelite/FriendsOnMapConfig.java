@@ -115,4 +115,9 @@ public interface FriendsOnMapConfig extends Config {
     return false;
   }
 
+  @ConfigItem(position = 33, section = debug_section, keyName = "fake_friends", name = "Add Fake Friends", description = "Adds some fake friends for debugging when you have no friends")
+  default boolean fakeFriends() {
+    return false;
+  }
+
 }
