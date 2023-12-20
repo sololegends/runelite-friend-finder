@@ -15,6 +15,82 @@ Your in-game location will be sent to an external server where it will be store 
 
 The way the location retrieval of your friends works is they would have to have the this plugin and be also sending their their location to the server for your client to retrieve and then display. Both people must have the plugin for this to work.
 
+## API Server 
+The current API server used by default is one developed and run by me. However, If you so desire you can setup a private API for this plugin fairly easily. Here is how. 
+
+1. Setup a server with a single REST API
+2. Ensure that API server is accessible from wherever you wish to play osrs with the this plugin
+3. Share and set the proper API Key in the plugin configuration for your API 
+   - Key not used for public API server, this is built in just for those who want to roll their own server
+   - this can be left blank to not send an auth header
+4. Change the API Server configuration value in your plugin, and have anyone who wishes to join you on that private server also change that configuration option. 
+  
+### API Server Requirement
+- **Player location data REQUEST payload:**
+  - API Key sent as Authorization header `Authorization: Bearer $API_KEY`
+  ```json 
+  {
+    // Player's Username
+    "name": string,
+    // Player's ID
+    "id": int32,
+    // X-Axis position
+    "x": int32,
+    // Y-Axis position
+    "y": int32,
+    // Z-Axis position
+    "z": int32,
+    // World number
+    "w": int32,
+    // Region ID adjusted for local instanced regions
+    "r": int32,
+    // Following not necessary, unless for side-bar functionality
+    // Health: current
+    "hm": int32,
+    // Health: Maximum
+    "hM": int32,
+    // Prayer: current
+    "pm": int32,
+    // prayer: maximum
+    "pM": int32,
+    // Player friends
+    "friends": [
+      string...
+    ]
+  }
+  ```   
+- **Player location data RESPONSE payload:**
+  ```json 
+  [
+    {
+      // Friend's Username
+      "name": string,
+      // Friend's ID
+      "id": int32,
+      // X-Axis position
+      "x": int32,
+      // Y-Axis position
+      "y": int32,
+      // Z-Axis position
+      "z": int32,
+      // World number
+      "w": int32,
+      // Region ID adjusted for local instanced regions
+      "r": int32,
+      // Following not necessary, unless for side-bar functionality
+      // Health: current
+      "hm": int32,
+      // Health: Maximum
+      "hM": int32,
+      // Prayer: current
+      "pm": int32,
+      // prayer: maximum
+      "pM": int32
+    }...
+  ]
+  ```   
+
+
 ## Privacy Information
 - Yes, this plugin reaches out to a server I setup to store and deliver your runescape location to and from your friends
 - No location history data is stored

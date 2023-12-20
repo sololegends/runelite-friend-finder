@@ -23,8 +23,8 @@ import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
+import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.worldmap.WorldMap;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatColorType;
@@ -257,7 +257,7 @@ public class FriendsOnMapPlugin extends Plugin {
 
   private boolean isMouseInWorldMap() {
     final Point mousePos = client.getMouseCanvasPosition();
-    final Widget view = client.getWidget(WidgetInfo.WORLD_MAP_VIEW);
+    final Widget view = client.getWidget(ComponentID.WORLD_MAP_MAPVIEW);
     if (view == null) {
       return false;
     }
@@ -458,11 +458,6 @@ public class FriendsOnMapPlugin extends Plugin {
 
   public void updateFriendPointIcon(FriendMapPoint mp, boolean force) {
     boolean align_left = mp.isCurrentlyEdgeSnapped() && alignLeft(mp.getWorldPoint().getX());
-    int ds = config.dotSize();
-    mp.setImagePoint(new Point(ds / 2, ds / 2));
-    if (mp.isCurrentlyEdgeSnapped()) {
-      mp.setImagePoint(null);
-    }
     if (mp.left_align == align_left && !force) {
       return;
     }

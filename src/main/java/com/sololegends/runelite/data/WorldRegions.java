@@ -61,6 +61,7 @@ public class WorldRegions {
     addRegion(surface("Wintertodt", 0, 0, fromBounds(0, 0, 0, 0)), 6462);
     addRegion(surface("Zalcano", 0, 0, fromBounds(0, 0, 0, 0)), 12126);
     addRegion(surface("Zulrah", 0, 0, fromBounds(0, 0, 0, 0)), 9007);
+    addRegion(surface("Skotizo", 0, 0, fromBounds(0, 0, 0, 0)), 9048);
 
     // Cities
     // !TBD
@@ -186,6 +187,7 @@ public class WorldRegions {
     addRegion(surface("Woodcutting Guild Dungeon", 0, 0, fromBounds(0, 0, 0, 0)), 6298);
     addRegion(surface("Wyvern Cave", 0, 0, fromBounds(0, 0, 0, 0)), 14495, 14496);
     addRegion(surface("Yanille Agility Dungeon", 0, 0, fromBounds(0, 0, 0, 0)), 10388);
+    addRegion(surface("Poison Waste Underground", 0, 0, fromBounds(0, 0, 0, 0)), 5954);
 
     // Minigames
     addRegion(surface("Ardougne Rat Pits", 0, 0, fromBounds(0, 0, 0, 0)), 10646);
@@ -224,12 +226,14 @@ public class WorldRegions {
     addRegion(surface("Varrock Rat Pits", 0, 0, fromBounds(0, 0, 0, 0)), 11599);
     addRegion(surface("Volcanic Mine", 0, 0, fromBounds(0, 0, 0, 0)), 15263, 15262);
     addRegion(surface("Guardians of the Rift", 0, 0, fromBounds(0, 0, 0, 0)), 14484);
+    addRegion(surface("Giant's Foundry", 0, 0, fromBounds(0, 0, 0, 0)), 13491);
 
     // Raids
     addRegion(surface("Chambers of Xeric", 0, 0, fromBounds(0, 0, 0, 0)), 12889, 13136, 13137, 13138, 13139, 13140,
         13141, 13145, 13393, 13394, 13395, 13396, 13397, 13401);
     addRegion(surface("Theatre of Blood", 0, 0, fromBounds(0, 0, 0, 0)), 12611, 12612, 12613, 12867, 12869, 13122,
         13123, 13125, 13379);
+    addRegion(surface("Tombs of Amascut", 0, 0, fromBounds(0, 0, 0, 0)), 14160, 14672, 13454, 14674, 14676, 15184);
 
     // Other
     addRegion(surface("Home, Sweet Home", 0, 0, fromBounds(0, 0, 0, 0)), 7513);
@@ -239,6 +243,10 @@ public class WorldRegions {
     addRegion(surface("Icyene Graveyard", 0, 0, fromBounds(0, 0, 0, 0)), 14641);
     addRegion(surface("Baba Yaga's House", 0, 0, fromBounds(0, 0, 0, 0)), 9800);
     addRegion(surface("Killerwatt Rift", 0, 0, fromBounds(0, 0, 0, 0)), 10577);
+    addRegion(surface("Enchanted Valley", 0, 0, fromBounds(0, 0, 0, 0)), 12102);
+    addRegion(surface("Essence Mine", 0, 0, fromBounds(0, 0, 0, 0)), 11595);
+    addRegion(surface("Sophanem Bank", 0, 0, fromBounds(0, 0, 0, 0)), 11088);
+    addRegion(surface("Puro-Puro", 0, 0, fromBounds(0, 0, 0, 0)), 10307);
 
     // Rune alters
     addRegion(surface("Air Alter", 0, 0, fromBounds(0, 0, 0, 0)), 11339);
@@ -262,6 +270,9 @@ public class WorldRegions {
 
     // Cities
     addRegion(surface("Mor-Ul-Rek", 0, 0, fromBounds(0, 0, 0, 0)), 9808, 10064, 9807, 10069);
+
+    // Events
+    addRegion(surface("Mime Show", 0, 0, fromBounds(0, 0, 0, 0)), 8010);
 
   }
 }

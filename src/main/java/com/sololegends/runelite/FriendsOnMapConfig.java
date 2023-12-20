@@ -50,12 +50,17 @@ public interface FriendsOnMapConfig extends Config {
     return "https://runelite.sololegends.com/friends";
   }
 
-  @ConfigItem(position = 2, section = "General", keyName = "update_interval", name = "Update Interval", description = "Interval between sending/receiving your/friends locations")
+  @ConfigItem(position = 2, section = "General", keyName = "friend_api_key", name = "Friends API Key", description = "API Key to send as a header to the API on each request, only for private servers")
+  default String friendsAPIKey() {
+    return "";
+  }
+
+  @ConfigItem(position = 3, section = "General", keyName = "update_interval", name = "Update Interval", description = "Interval between sending/receiving your/friends locations")
   default UpdateIntervalEnum updateInterval() {
     return UpdateIntervalEnum.SECONDS_2;
   }
 
-  @ConfigItem(position = 3, section = "General", keyName = "enable_sidebar", name = "Enable Sidebar", description = "Whether to enable the Friends On Map sidebar")
+  @ConfigItem(position = 4, section = "General", keyName = "enable_sidebar", name = "Enable Sidebar", description = "Whether to enable the Friends On Map sidebar")
   default boolean showSidebarIcon() {
     return true;
   }

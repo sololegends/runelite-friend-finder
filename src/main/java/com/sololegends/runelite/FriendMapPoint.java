@@ -7,6 +7,7 @@ import com.sololegends.runelite.helpers.WorldLocations.WorldSurface;
 import com.sololegends.runelite.skills.Health;
 import com.sololegends.runelite.skills.Prayer;
 
+import net.runelite.api.Point;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.ui.overlay.worldmap.WorldMapPoint;
 
@@ -22,11 +23,13 @@ public class FriendMapPoint extends WorldMapPoint {
   private Health health = new Health(0, 0);
   private Prayer prayer = new Prayer(0, 0);
   private long updated = System.currentTimeMillis();
+  private int point_offset = -1;
 
   public FriendMapPoint(WorldPoint worldPoint, BufferedImage image, String friend, int world) {
     super(worldPoint, image);
     this.friend = friend;
     this.world = world;
+    point_offset = image.getHeight() / 2;
   }
 
   public void updated() {
@@ -65,12 +68,28 @@ public class FriendMapPoint extends WorldMapPoint {
   public void onEdgeSnap() {
     super.onEdgeSnap();
     this.setJumpOnClick(true);
+
+    // Setup the display of this icon
+    setImagePoint(null);
   }
 
   @Override
   public void onEdgeUnsnap() {
     super.onEdgeUnsnap();
     this.setJumpOnClick(false);
+
+    // Setup the display of this icon
+    setImagePoint(new Point(point_offset, point_offset));
+  }
+
+  @Override
+  public void setImage(BufferedImage image) {
+    super.setImage(image);
+    point_offset = image.getHeight() / 2;
+    // Update the point
+    if (!isCurrentlyEdgeSnapped()) {
+      setImagePoint(new Point(point_offset, point_offset));
+    }
   }
 
   public FriendMapPoint asOverworld() {

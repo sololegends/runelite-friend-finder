@@ -17,8 +17,8 @@ import net.runelite.api.Client;
 import net.runelite.api.Point;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.worldmap.WorldMap;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.JagexColors;
@@ -44,12 +44,12 @@ public class OtherSurfacePlayersOverlay extends Overlay {
     setPosition(OverlayPosition.DYNAMIC);
     setPriority(OverlayPriority.HIGHEST);
     setLayer(OverlayLayer.MANUAL);
-    drawAfterLayer(WidgetInfo.WORLD_MAP_VIEW);
+    drawAfterLayer(ComponentID.WORLD_MAP_MAPVIEW);
   }
 
   @Override
   public Dimension render(Graphics2D g) {
-    Widget parent = client.getWidget(WidgetInfo.WORLD_MAP_VIEW);
+    Widget parent = client.getWidget(ComponentID.WORLD_MAP_MAPVIEW);
     if (parent == null || parent.isHidden()) {
       return null;
     }
@@ -101,7 +101,7 @@ public class OtherSurfacePlayersOverlay extends Overlay {
 
   private void drawAreas(Graphics2D g, WorldMap map) {
     Set<WorldSurface> surfaces = WorldLocations.getSurfaces();
-    Widget map_w = client.getWidget(WidgetInfo.WORLD_MAP_VIEW);
+    Widget map_w = client.getWidget(ComponentID.WORLD_MAP_MAPVIEW);
 
     if (map_w == null) {
       return;
@@ -175,8 +175,8 @@ public class OtherSurfacePlayersOverlay extends Overlay {
    *         of visible widgets overlaying the world map clipped from it.
    */
   private Shape getWorldMapClipArea(Rectangle baseRectangle) {
-    final Widget overview = client.getWidget(WidgetInfo.WORLD_MAP_OVERVIEW_MAP);
-    final Widget surfaceSelector = client.getWidget(WidgetInfo.WORLD_MAP_SURFACE_SELECTOR);
+    final Widget overview = client.getWidget(ComponentID.WORLD_MAP_OVERVIEW_MAP);
+    final Widget surfaceSelector = client.getWidget(ComponentID.WORLD_MAP_SURFACE_SELECTOR);
 
     Area clipArea = new Area(baseRectangle);
     boolean subtracted = false;
@@ -207,7 +207,7 @@ public class OtherSurfacePlayersOverlay extends Overlay {
   private void drawMapGrid(Graphics2D graphics, int grid_size, Color grid_color) {
     final int gridTruncate = ~(grid_size - 1);
 
-    Widget map = client.getWidget(WidgetInfo.WORLD_MAP_VIEW);
+    Widget map = client.getWidget(ComponentID.WORLD_MAP_MAPVIEW);
 
     if (map == null) {
       return;

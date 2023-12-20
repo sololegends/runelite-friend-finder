@@ -39,6 +39,11 @@ public class RemoteDataManager {
         .url(config.friendsAPI())
         .post(RequestBody.create(MediaType.get("application/json"), data.toString()));
 
+    // Handle APi key, if present
+    if (config.friendsAPIKey().isBlank()) {
+      req_builder.header("Authorization", "Bearer " + config.friendsAPIKey());
+    }
+
     http_client.newCall(req_builder.build()).enqueue(new Callback() {
       @Override
       public void onFailure(Call call, IOException e) {
@@ -47,7 +52,8 @@ public class RemoteDataManager {
           plugin.message("Failed to retrieve friends from friends api: Invalid API URL");
           return;
         }
-        plugin.message("Failed to retrieve friends from friends api: API Call Failed");
+        // plugin.message("Failed to retrieve friends from friends api: API Call
+        // Failed");
       }
 
       @Override
