@@ -42,7 +42,7 @@ public class OtherSurfacePlayersOverlay extends Overlay {
     this.plugin = plugin;
     this.config = config;
     setPosition(OverlayPosition.DYNAMIC);
-    setPriority(OverlayPriority.HIGHEST);
+    setPriority(Overlay.PRIORITY_HIGHEST);
     setLayer(OverlayLayer.MANUAL);
     drawAfterLayer(ComponentID.WORLD_MAP_MAPVIEW);
   }

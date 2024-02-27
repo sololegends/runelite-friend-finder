@@ -24,7 +24,7 @@ public class PlayerLocationOverlayPanel extends OverlayPanel {
   private PlayerLocationOverlayPanel(FriendsOnMapPlugin plugin, FriendsOnMapConfig config, Client client) {
     super(plugin);
     setPosition(OverlayPosition.TOP_LEFT);
-    setPriority(OverlayPriority.LOW);
+    setPriority(Overlay.PRIORITY_LOW);
     this.config = config;
     this.client = client;
   }

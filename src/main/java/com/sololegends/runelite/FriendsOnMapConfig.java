@@ -10,6 +10,9 @@ public interface FriendsOnMapConfig extends Config {
   @ConfigSection(name = "Styling", description = "Stylize it!", position = 10)
   String styling_section = "styling";
 
+  @ConfigSection(name = "Custom API", description = "Set a custom private API", position = 10)
+  String custom_section = "custom";
+
   @ConfigSection(name = "Debug", description = "Debugging", position = 30, closedByDefault = true)
   String debug_section = "debug";
 
@@ -43,16 +46,6 @@ public interface FriendsOnMapConfig extends Config {
   @ConfigItem(position = 0, section = "General", keyName = "dbl_click_ch_world", name = "Double Click to change world", description = "When true double clicking a friend's icon will switch to their world")
   default boolean dblClickWorldHop() {
     return false;
-  }
-
-  @ConfigItem(position = 1, section = "General", keyName = "friend_api", name = "Friends API", description = "What API to send and retrieve location data to/from")
-  default String friendsAPI() {
-    return "https://runelite.sololegends.com/friends";
-  }
-
-  @ConfigItem(position = 2, section = "General", keyName = "friend_api_key", name = "Friends API Key", description = "API Key to send as a header to the API on each request, only for private servers")
-  default String friendsAPIKey() {
-    return "";
   }
 
   @ConfigItem(position = 3, section = "General", keyName = "update_interval", name = "Update Interval", description = "Interval between sending/receiving your/friends locations")
@@ -109,7 +102,23 @@ public interface FriendsOnMapConfig extends Config {
     return false;
   }
 
-  // Debugging
+  // CUSTOM API STUFF
+  @ConfigItem(position = 21, section = "Custom API", keyName = "friend_api", name = "Friends API", description = "What API to send and retrieve location data to/from")
+  default String friendsAPI() {
+    return "https://runelite.sololegends.com/friends";
+  }
+
+  @ConfigItem(position = 22, section = "Custom API", keyName = "friend_api_key", name = "Friends API Key", description = "API Key to send as a header to the API on each request, only for private servers")
+  default String friendsAPIKey() {
+    return "";
+  }
+
+  @ConfigItem(position = 23, section = "Report Link", keyName = "friend_report_api", name = "Reports Link", description = "Link to open when reporting a missing location")
+  default String reportLink() {
+    return "https://runelite.sololegends.com/location/report";
+  }
+
+  // DEBUGGING
   @ConfigItem(position = 31, section = debug_section, keyName = "show_self_location_card", name = "Show your location card", description = "Shows your tracked location card at the top left of the game window")
   default boolean yourLocation() {
     return false;

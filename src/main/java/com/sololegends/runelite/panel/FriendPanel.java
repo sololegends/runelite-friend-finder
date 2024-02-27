@@ -86,6 +86,8 @@ public class FriendPanel extends JPanel {
     if (surface != null) {
       border.setTitle(friend.friend + ": " + surface.name);
     }
+    this.revalidate();
+    this.repaint();
   }
 
   public boolean expired() {

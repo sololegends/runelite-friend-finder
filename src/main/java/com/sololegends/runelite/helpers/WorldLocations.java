@@ -308,7 +308,7 @@ public class WorldLocations {
 
   public static WorldSurface getWorldSurface(WorldPoint point) {
     WorldSurface s = getWorldSurface(point.getRegionID());
-    if (!s.name.equals("Unknown")) {
+    if (s != null && !s.name.equals("Unknown")) {
       return s;
     }
     for (WorldSurface surface : WORLD_AREAS) {

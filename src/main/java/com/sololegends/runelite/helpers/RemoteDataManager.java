@@ -153,7 +153,7 @@ public class RemoteDataManager {
           // Generate a surface world wo
           if (FAKE_FRIENDS.size() == 0) {
             // Generate some friends
-            int count = rand.nextInt(15) + 5;
+            int count = rand.nextInt(15) + 20;
             for (int i = 0; i < count; i++) {
               String name = "Fake Friend #" + i;
               String tool_tip = name + " -- World: 000";
