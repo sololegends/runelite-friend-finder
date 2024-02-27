@@ -451,14 +451,15 @@ public class FriendsOnMapPlugin extends Plugin {
     payload.addProperty("y", player_location.getY());
     payload.addProperty("z", player_location.getPlane());
 
-    payload.addProperty("w", client.getWorld());
     // Region of instance or world
     LocalPoint local = player.getLocalLocation();
     int region_id = player_location.getRegionID();
+    int instance_id = -1;
     if (client.isInInstancedRegion()) {
-      region_id = WorldPoint.fromLocalInstance(client, local).getRegionID();
+      instance_id = WorldPoint.fromLocalInstance(client, local).getRegionID();
     }
     payload.addProperty("r", region_id);
+    payload.addProperty("i", instance_id);
     return payload;
   }
 
