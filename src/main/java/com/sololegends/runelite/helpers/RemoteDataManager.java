@@ -20,6 +20,7 @@ import okhttp3.*;
 public class RemoteDataManager {
 
   private volatile boolean in_progress = false;
+  private volatile boolean report_in_progress = false;
   private List<FriendMapPoint> FAKE_FRIENDS = new ArrayList<>();
   private Random rand = new Random();
 
@@ -36,6 +37,40 @@ public class RemoteDataManager {
   private int errors_threshold = 5;
   private boolean error_notified = false;
 
+  public void sendReport(JsonObject data, UpdateFlow update) {
+    if (report_in_progress) {
+      return;
+    }
+    report_in_progress = true;
+    Request.Builder req_builder = new Request.Builder()
+        .url(config.reportLink())
+        .post(RequestBody.create(MediaType.get("application/json"), data.toString()));
+
+    // Handle APi key, if present
+    if (!config.friendsAPIKey().isBlank()) {
+      req_builder.header("Authorization", "Bearer " + config.friendsAPIKey());
+    }
+
+    http_client.newCall(req_builder.build()).enqueue(new Callback() {
+      @Override
+      public void onFailure(Call call, IOException e) {
+        update.error("Failed to call API");
+        report_in_progress = false;
+      }
+
+      @Override
+      public void onResponse(Call call, Response resp) throws IOException {
+        if (resp.code() == 200) {
+          update.error("Location reported!");
+          report_in_progress = false;
+          return;
+        }
+        update.error("Failed to report!");
+        report_in_progress = false;
+      }
+    });
+  }
+
   public void sendRequest(JsonObject data) {
     if (in_progress) {
       return;
@@ -46,7 +81,7 @@ public class RemoteDataManager {
         .post(RequestBody.create(MediaType.get("application/json"), data.toString()));
 
     // Handle APi key, if present
-    if (config.friendsAPIKey().isBlank()) {
+    if (!config.friendsAPIKey().isBlank()) {
       req_builder.header("Authorization", "Bearer " + config.friendsAPIKey());
     }
 
@@ -198,5 +233,11 @@ public class RemoteDataManager {
         in_progress = false;
       }
     });
+  }
+
+  public abstract static class UpdateFlow {
+    public abstract void success(String message);
+
+    public abstract void error(String message);
   }
 }

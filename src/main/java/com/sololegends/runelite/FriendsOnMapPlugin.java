@@ -437,6 +437,31 @@ public class FriendsOnMapPlugin extends Plugin {
     }
   }
 
+  public JsonObject getPlayerLocation() {
+    // USE FRIENDS API
+    JsonObject payload = new JsonObject();
+    // Send player info to server
+    Player player = client.getLocalPlayer();
+    if (player == null) {
+      return payload;
+    }
+    WorldPoint player_location = player.getWorldLocation();
+    // Build the payload
+    payload.addProperty("x", player_location.getX());
+    payload.addProperty("y", player_location.getY());
+    payload.addProperty("z", player_location.getPlane());
+
+    payload.addProperty("w", client.getWorld());
+    // Region of instance or world
+    LocalPoint local = player.getLocalLocation();
+    int region_id = player_location.getRegionID();
+    if (client.isInInstancedRegion()) {
+      region_id = WorldPoint.fromLocalInstance(client, local).getRegionID();
+    }
+    payload.addProperty("r", region_id);
+    return payload;
+  }
+
   @Subscribe
   public void onClientTick(ClientTick clientTick) {
     for (FriendMapPoint mp : current_points) {
