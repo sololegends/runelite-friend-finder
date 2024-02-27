@@ -42,33 +42,41 @@ public class RemoteDataManager {
       return;
     }
     report_in_progress = true;
-    Request.Builder req_builder = new Request.Builder()
-        .url(config.reportLink())
-        .post(RequestBody.create(MediaType.get("application/json"), data.toString()));
+    try {
+      Request.Builder req_builder = new Request.Builder()
+          .url(config.reportLink())
+          .post(RequestBody.create(MediaType.get("application/json"), data.toString()));
 
-    // Handle APi key, if present
-    if (!config.friendsAPIKey().isBlank()) {
-      req_builder.header("Authorization", "Bearer " + config.friendsAPIKey());
-    }
-
-    http_client.newCall(req_builder.build()).enqueue(new Callback() {
-      @Override
-      public void onFailure(Call call, IOException e) {
-        update.error("Failed to call API");
-        report_in_progress = false;
+      // Handle APi key, if present
+      if (!config.friendsAPIKey().isBlank()) {
+        req_builder.header("Authorization", "Bearer " + config.friendsAPIKey());
       }
 
-      @Override
-      public void onResponse(Call call, Response resp) throws IOException {
-        if (resp.code() == 200) {
-          update.error("Location reported!");
+      http_client.newCall(req_builder.build()).enqueue(new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+          update.error("Failed to call API");
           report_in_progress = false;
-          return;
         }
-        update.error("Failed to report!");
-        report_in_progress = false;
-      }
-    });
+
+        @Override
+        public void onResponse(Call call, Response resp) throws IOException {
+          if (resp.body() != null) {
+            resp.body().close();
+          }
+
+          if (resp.code() == 200) {
+            update.error("Location reported!");
+            report_in_progress = false;
+            return;
+          }
+          update.error("Failed to report!");
+          report_in_progress = false;
+        }
+      });
+    } catch (IllegalArgumentException e) {
+      update.error("Config Error!");
+    }
   }
 
   public void sendRequest(JsonObject data) {
@@ -76,13 +84,23 @@ public class RemoteDataManager {
       return;
     }
     in_progress = true;
-    Request.Builder req_builder = new Request.Builder()
-        .url(config.friendsAPI())
-        .post(RequestBody.create(MediaType.get("application/json"), data.toString()));
+    Request.Builder req_builder = null;
+    try {
+      req_builder = new Request.Builder()
+          .url(config.friendsAPI())
+          .post(RequestBody.create(MediaType.get("application/json"), data.toString()));
 
-    // Handle APi key, if present
-    if (!config.friendsAPIKey().isBlank()) {
-      req_builder.header("Authorization", "Bearer " + config.friendsAPIKey());
+      // Handle APi key, if present
+      if (!config.friendsAPIKey().isBlank()) {
+        req_builder.header("Authorization", "Bearer " + config.friendsAPIKey());
+      }
+    } catch (IllegalArgumentException e) {
+      System.err.println("Failed to setup url: " + e.getMessage());
+      e.printStackTrace();
+      return;
+    }
+    if (req_builder == null) {
+      return;
     }
 
     http_client.newCall(req_builder.build()).enqueue(new Callback() {
@@ -155,7 +173,7 @@ public class RemoteDataManager {
                   wmp.setRegion(f.get("r").getAsInt());
                 }
 
-                if (f.has("l")) {
+                if (f.has("l") && !f.get("l").isJsonNull()) {
                   WorldPoint entry = new WorldPoint(0, 0, 0);
                   if (f.has("lx") && f.has("ly")) {
                     int lx = f.get("lx").getAsInt();

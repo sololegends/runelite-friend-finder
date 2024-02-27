@@ -81,6 +81,11 @@ public class FriendsPanel extends PluginPanel {
     submit.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
+        if (!submit.getText().equals(SUBMIT_TEXT)) {
+          // Reject double clicking
+          return;
+        }
+        submit.setText("Sending report...");
         String location = location_input.getText();
         // Build Payload
         JsonObject payload = plugin.getPlayerLocation();
@@ -137,9 +142,9 @@ public class FriendsPanel extends PluginPanel {
     info_panel.setBorder(new EmptyBorder(0, 0, 4, 0));
     info_panel.add(new JLabel("Friends Info"));
 
-    add(info_panel, BorderLayout.PAGE_START);
-    add(friends, BorderLayout.CENTER);
-    add(report_panel, BorderLayout.PAGE_END);
+    add(report_panel, BorderLayout.PAGE_START);
+    add(info_panel, BorderLayout.CENTER);
+    add(friends, BorderLayout.PAGE_END);
 
     revalidate();
     repaint();

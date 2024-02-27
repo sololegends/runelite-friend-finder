@@ -8,6 +8,7 @@ import com.sololegends.runelite.skills.Health;
 import com.sololegends.runelite.skills.Prayer;
 
 import net.runelite.api.Point;
+import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.ui.overlay.worldmap.WorldMapPoint;
 
@@ -112,14 +113,17 @@ public class FriendMapPoint extends WorldMapPoint {
   public WorldSurface getLocation() {
     WorldSurface sur = null;
     if (location != null) {
-      sur = location;
+      return location;
     }
     if (getRegion() != -1) {
       sur = WorldLocations.getWorldSurface(getRegion());
     }
     if (sur == null) {
       sur = WorldLocations.getWorldSurface(getWorldPoint());
-      ;
+    }
+    if (sur == null) {
+      sur = new WorldSurface("Unknown", new WorldPoint(0, 0, 0), new WorldArea(0, 0, 0, 0, 0));
+
     }
     return sur;
   }

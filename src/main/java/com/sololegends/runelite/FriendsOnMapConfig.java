@@ -10,7 +10,7 @@ public interface FriendsOnMapConfig extends Config {
   @ConfigSection(name = "Styling", description = "Stylize it!", position = 10)
   String styling_section = "styling";
 
-  @ConfigSection(name = "Custom API", description = "Set a custom private API", position = 10)
+  @ConfigSection(name = "Custom API", description = "Set a custom private API", position = 20)
   String custom_section = "custom";
 
   @ConfigSection(name = "Debug", description = "Debugging", position = 30, closedByDefault = true)
@@ -103,17 +103,17 @@ public interface FriendsOnMapConfig extends Config {
   }
 
   // CUSTOM API STUFF
-  @ConfigItem(position = 21, section = "Custom API", keyName = "friend_api", name = "Friends API", description = "What API to send and retrieve location data to/from")
+  @ConfigItem(position = 21, section = custom_section, keyName = "friend_api", name = "Friends API", description = "What API to send and retrieve location data to/from")
   default String friendsAPI() {
     return "https://runelite.sololegends.com/friends";
   }
 
-  @ConfigItem(position = 22, section = "Custom API", keyName = "friend_api_key", name = "Friends API Key", description = "API Key to send as a header to the API on each request, only for private servers")
+  @ConfigItem(position = 22, section = custom_section, keyName = "friend_api_key", name = "Friends API Key", description = "API Key to send as a header to the API on each request, only for private servers")
   default String friendsAPIKey() {
     return "";
   }
 
-  @ConfigItem(position = 23, section = "Report Link", keyName = "friend_report_api", name = "Reports Link", description = "Link to open when reporting a missing location")
+  @ConfigItem(position = 23, section = custom_section, keyName = "friend_report_api", name = "Reports Link", description = "Link to open when reporting a missing location")
   default String reportLink() {
     return "https://runelite.sololegends.com/location/report";
   }
