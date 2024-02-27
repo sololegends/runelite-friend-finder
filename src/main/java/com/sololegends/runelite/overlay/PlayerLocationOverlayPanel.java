@@ -11,8 +11,7 @@ import com.sololegends.runelite.helpers.WorldLocations;
 import com.sololegends.runelite.helpers.WorldLocations.WorldSurface;
 
 import net.runelite.api.Client;
-import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.coords.*;
 import net.runelite.client.ui.overlay.*;
 import net.runelite.client.ui.overlay.components.LineComponent;
 
@@ -40,8 +39,11 @@ public class PlayerLocationOverlayPanel extends OverlayPanel {
         region_id = WorldPoint.fromLocalInstance(client, local).getRegionID();
       }
       WorldSurface s = WorldLocations.getWorldSurface(region_id);
-      if (s.name.equals("Unknown")) {
+      if (s == null || s.name.equals("Unknown")) {
         s = WorldLocations.getWorldSurface(player);
+      }
+      if (s == null) {
+        s = new WorldSurface("Unknown", new WorldPoint(0, 0, 0), new WorldArea(0, 0, 0, 0, 0));
       }
       panelComponent.getChildren().add(LineComponent.builder()
           .left(s.name)

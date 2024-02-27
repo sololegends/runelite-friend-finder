@@ -24,6 +24,7 @@ public class FriendMapPoint extends WorldMapPoint {
   private Prayer prayer = new Prayer(0, 0);
   private long updated = System.currentTimeMillis();
   private int point_offset = -1;
+  private WorldSurface location = null;
 
   public FriendMapPoint(WorldPoint worldPoint, BufferedImage image, String friend, int world) {
     super(worldPoint, image);
@@ -42,6 +43,10 @@ public class FriendMapPoint extends WorldMapPoint {
 
   public void setPrayer(Prayer prayer) {
     this.prayer = prayer;
+  }
+
+  public void setLocation(WorldSurface location) {
+    this.location = location;
   }
 
   public void setHealth(Health health) {
@@ -105,10 +110,18 @@ public class FriendMapPoint extends WorldMapPoint {
   }
 
   public WorldSurface getLocation() {
-    if (getRegion() != -1) {
-      return WorldLocations.getWorldSurface(getRegion());
+    WorldSurface sur = null;
+    if (location != null) {
+      sur = location;
     }
-    return WorldLocations.getWorldSurface(getWorldPoint());
+    if (getRegion() != -1) {
+      sur = WorldLocations.getWorldSurface(getRegion());
+    }
+    if (sur == null) {
+      sur = WorldLocations.getWorldSurface(getWorldPoint());
+      ;
+    }
+    return sur;
   }
 
   @Override

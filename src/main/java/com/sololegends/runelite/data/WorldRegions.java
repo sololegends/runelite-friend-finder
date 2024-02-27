@@ -62,6 +62,9 @@ public class WorldRegions {
     addRegion(surface("Zalcano", 0, 0, fromBounds(0, 0, 0, 0)), 12126);
     addRegion(surface("Zulrah", 0, 0, fromBounds(0, 0, 0, 0)), 9007);
     addRegion(surface("Skotizo", 0, 0, fromBounds(0, 0, 0, 0)), 9048);
+    addRegion(surface("Vardorvis", 0, 0, fromBounds(0, 0, 0, 0)), 4405);
+    addRegion(surface("Duke Sucellus", 0, 0, fromBounds(0, 0, 0, 0)), 12132);
+    addRegion(surface("The Whisper", 0, 0, fromBounds(0, 0, 0, 0)), 10340);
 
     // Cities
     // !TBD
@@ -188,6 +191,9 @@ public class WorldRegions {
     addRegion(surface("Wyvern Cave", 0, 0, fromBounds(0, 0, 0, 0)), 14495, 14496);
     addRegion(surface("Yanille Agility Dungeon", 0, 0, fromBounds(0, 0, 0, 0)), 10388);
     addRegion(surface("Poison Waste Underground", 0, 0, fromBounds(0, 0, 0, 0)), 5954);
+    addRegion(surface("The Scar", 0, 0, fromBounds(0, 0, 0, 0)), 8036, 8804, 7012, 7524);
+    addRegion(surface("Lassar Undercity", 0, 0, fromBounds(0, 0, 0, 0)), 10596, 10852, 10339, 10338, 10594, 10595, 10850, 10851);
+    addRegion(surface("Lasser - Shadow Realm", 0, 0, fromBounds(0, 0, 0, 0)), 9316, 9315, 9314, 9572, 9571, 9570, 9828, 9827, 9826);
 
     // Minigames
     addRegion(surface("Ardougne Rat Pits", 0, 0, fromBounds(0, 0, 0, 0)), 10646);
@@ -247,6 +253,9 @@ public class WorldRegions {
     addRegion(surface("Essence Mine", 0, 0, fromBounds(0, 0, 0, 0)), 11595);
     addRegion(surface("Sophanem Bank", 0, 0, fromBounds(0, 0, 0, 0)), 11088);
     addRegion(surface("Puro-Puro", 0, 0, fromBounds(0, 0, 0, 0)), 10307);
+    addRegion(surface("Grand Library", 0, 0, fromBounds(0, 0, 0, 0)), 10336, 10335, 10592, 10591);
+    addRegion(surface("Burning Lletya", 0, 0, fromBounds(0, 0, 0, 0)), 11103);
+    addRegion(surface("Prifddinas", 0, 0, fromBounds(0, 0, 0, 0)), 13150);
 
     // Rune alters
     addRegion(surface("Air Alter", 0, 0, fromBounds(0, 0, 0, 0)), 11339);
@@ -266,7 +275,7 @@ public class WorldRegions {
     addRegion(surface("Zanaris", 0, 0, fromBounds(0, 0, 0, 0)), 9541, 9797, 9540);
     addRegion(surface("Kalphite Caves", 0, 0, fromBounds(0, 0, 0, 0)), 13461, 13460, 13716);
     addRegion(surface("Mage Arena Basement", 0, 0, fromBounds(0, 0, 0, 0)), 10057);
-    addRegion(surface("Mage Arena Basement", 0, 0, fromBounds(0, 0, 0, 0)), 10057);
+    addRegion(surface("The Stranglewood", 0, 0, fromBounds(0, 0, 0, 0)), 4661, 4760, 4660, 4404, 4403);
 
     // Cities
     addRegion(surface("Mor-Ul-Rek", 0, 0, fromBounds(0, 0, 0, 0)), 9808, 10064, 9807, 10069);

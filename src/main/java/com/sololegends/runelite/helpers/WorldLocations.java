@@ -316,7 +316,7 @@ public class WorldLocations {
         return surface;
       }
     }
-    return new WorldSurface("Unknown", new WorldPoint(0, 0, 0), new WorldArea(0, 0, 0, 0, 0));
+    return null;
   }
 
   public static WorldSurface getWorldSurface(int region) {
@@ -326,7 +326,7 @@ public class WorldLocations {
         return s;
       }
     }
-    return new WorldSurface("Unknown", new WorldPoint(0, 0, 0), new WorldArea(0, 0, 0, 0, 0));
+    return null;
   }
 
   public static final class WorldSurface {

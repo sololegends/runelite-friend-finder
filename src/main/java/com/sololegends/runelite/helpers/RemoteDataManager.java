@@ -8,10 +8,12 @@ import javax.inject.Inject;
 
 import com.google.gson.*;
 import com.sololegends.runelite.*;
+import com.sololegends.runelite.helpers.WorldLocations.WorldSurface;
 import com.sololegends.runelite.skills.Health;
 import com.sololegends.runelite.skills.Prayer;
 
 import net.runelite.api.Point;
+import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import okhttp3.*;
 
@@ -29,6 +31,10 @@ public class RemoteDataManager {
 
   @Inject
   private OkHttpClient http_client;
+
+  private int errors = 0;
+  private int errors_threshold = 5;
+  private boolean error_notified = false;
 
   public void sendRequest(JsonObject data) {
     if (in_progress) {
@@ -58,7 +64,12 @@ public class RemoteDataManager {
 
       @Override
       public void onResponse(Call call, Response resp) throws IOException {
-        if (resp.code() != 200) {
+        if (resp.code() != 200 && !error_notified) {
+          if (errors < errors_threshold) {
+            errors++;
+          }
+          errors = 0;
+          error_notified = true;
           plugin.message("Failed to retrieve friends from friends api [RC2]");
           plugin.updated(System.currentTimeMillis() + (config.updateInterval().interval() * 9));
           in_progress = false;
@@ -107,6 +118,18 @@ public class RemoteDataManager {
                 wmp.setSnapToEdge(true);
                 if (f.has("r")) {
                   wmp.setRegion(f.get("r").getAsInt());
+                }
+
+                if (f.has("l")) {
+                  WorldPoint entry = new WorldPoint(0, 0, 0);
+                  if (f.has("lx") && f.has("ly")) {
+                    int lx = f.get("lx").getAsInt();
+                    int ly = f.get("ly").getAsInt();
+                    int lp = f.has("lp") ? f.get("lp").getAsInt() : 0;
+                    entry = new WorldPoint(lx, ly, lp);
+                  }
+                  WorldSurface loc = new WorldSurface(f.get("l").getAsString(), entry, new WorldArea(0, 0, 0, 0, 0));
+                  wmp.setLocation(loc);
                 }
 
                 // If health set
