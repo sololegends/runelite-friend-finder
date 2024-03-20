@@ -77,6 +77,8 @@ The current API server used by default is one developed and run by me. However, 
       "w": int32,
       // Region ID adjusted for local instanced regions
       "r": int32,
+      // Human readable location, will take priority over client resolved. However not needed
+      "l": string,
       // Following not necessary, unless for side-bar functionality
       // Health: current
       "hm": int32,
@@ -90,6 +92,24 @@ The current API server used by default is one developed and run by me. However, 
   ]
   ```   
 
+- **Location Report REQUEST payload:**
+  - API Key sent as Authorization header `Authorization: Bearer $API_KEY`
+  ```json 
+  {
+    // X-Axis position
+    "x": int32,
+    // Y-Axis position
+    "y": int32,
+    // Z-Axis position
+    "z": int32,
+    // Non-instanced Region ID
+    "r": int32,
+    // Local instanced region ID or '-1' if not in instance
+    "i": int32,
+    // Suggested name for the region
+    "l": string
+  }
+  ```   
 
 ## Privacy Information
 - Yes, this plugin reaches out to a server I setup to store and deliver your runescape location to and from your friends

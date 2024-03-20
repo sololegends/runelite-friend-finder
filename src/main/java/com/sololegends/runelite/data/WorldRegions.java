@@ -22,7 +22,7 @@ public class WorldRegions {
     return new WorldSurface(name, new WorldPoint(eX, eY, 0), areas);
   }
 
-  private static void addRegion(WorldSurface surface, int... region_ids) {
+  public static void addRegion(WorldSurface surface, int... region_ids) {
     for (int i : region_ids) {
       if (REGIONS.containsKey(i)) {
         System.out.println("FFP => WARNING: Duplicate Region ID registered [" + surface.name + ":" + i + "]");
@@ -192,8 +192,10 @@ public class WorldRegions {
     addRegion(surface("Yanille Agility Dungeon", 0, 0, fromBounds(0, 0, 0, 0)), 10388);
     addRegion(surface("Poison Waste Underground", 0, 0, fromBounds(0, 0, 0, 0)), 5954);
     addRegion(surface("The Scar", 0, 0, fromBounds(0, 0, 0, 0)), 8036, 8804, 7012, 7524);
-    addRegion(surface("Lassar Undercity", 0, 0, fromBounds(0, 0, 0, 0)), 10596, 10852, 10339, 10338, 10594, 10595, 10850, 10851);
-    addRegion(surface("Lasser - Shadow Realm", 0, 0, fromBounds(0, 0, 0, 0)), 9316, 9315, 9314, 9572, 9571, 9570, 9828, 9827, 9826);
+    addRegion(surface("Lassar Undercity", 0, 0, fromBounds(0, 0, 0, 0)), 10596, 10852, 10339, 10338, 10594, 10595,
+        10850, 10851);
+    addRegion(surface("Lasser - Shadow Realm", 0, 0, fromBounds(0, 0, 0, 0)), 9316, 9315, 9314, 9572, 9571, 9570, 9828,
+        9827, 9826);
 
     // Minigames
     addRegion(surface("Ardougne Rat Pits", 0, 0, fromBounds(0, 0, 0, 0)), 10646);
@@ -282,6 +284,21 @@ public class WorldRegions {
 
     // Events
     addRegion(surface("Mime Show", 0, 0, fromBounds(0, 0, 0, 0)), 8010);
+
+    // Varlamore
+    addRegion(surface("Crypt of Ranul", 0, 0, fromBounds(0, 0, 0, 0)), 6804, 6805);
+    addRegion(surface("Barracks Basement", 0, 0, fromBounds(0, 0, 0, 0)), 6549);
+    addRegion(surface("Cam Torum", 0, 0, fromBounds(0, 0, 0, 0)), 5525, 5781, 6037, 5780, 6036);
+    addRegion(surface("Perilous Moons Antechamber", 0, 0, fromBounds(0, 0, 0, 0)), 5781, 5782);
+    addRegion(surface("The Blood Moon", 0, 0, fromBounds(0, 0, 0, 0)), 5526);
+    addRegion(surface("The Eclipse Moon", 0, 0, fromBounds(0, 0, 0, 0)), 6038);
+    addRegion(surface("The Blue Moon", 0, 0, fromBounds(0, 0, 0, 0)), 5783);
+    addRegion(surface("Earthbound Cavern", 0, 0, fromBounds(0, 0, 0, 0)), 5527);
+    addRegion(surface("Streambound Cavern", 0, 0, fromBounds(0, 0, 0, 0)), 6039);
+    addRegion(surface("Ancient Shrine", 0, 0, fromBounds(0, 0, 0, 0)), 6037);
+    addRegion(surface("Ancient Prison", 0, 0, fromBounds(0, 0, 0, 0)), 5525);
+    addRegion(surface("Fortis Colusseum", 0, 0, fromBounds(0, 0, 0, 0)), 7316);
+    addRegion(surface("Hunter Guild Basement", 0, 0, fromBounds(0, 0, 0, 0)), 6291);
 
   }
 }

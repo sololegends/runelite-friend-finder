@@ -13,6 +13,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.inject.Provides;
 import com.sololegends.runelite.helpers.RemoteDataManager;
+import com.sololegends.runelite.helpers.RemoteDataManager.UpdateFlow;
 import com.sololegends.runelite.overlay.OtherSurfacePlayersOverlay;
 import com.sololegends.runelite.overlay.PlayerLocationOverlayPanel;
 import com.sololegends.runelite.panel.FriendsPanel;
@@ -134,6 +135,21 @@ public class FriendsOnMapPlugin extends Plugin {
 
     if (config.showSidebarIcon()) {
       clientToolbar.addNavigation(side_panel_btn);
+    }
+
+    // Load locations from remote server
+    if (config.locationsLink() != null && !config.locationsLink().isBlank()) {
+      remote.getServerLocations(new UpdateFlow() {
+        @Override
+        public void success(String message) {
+          // Nothing here for the time being
+        }
+
+        @Override
+        public void error(String message) {
+          // Nothing here for the time being
+        }
+      });
     }
   }
 

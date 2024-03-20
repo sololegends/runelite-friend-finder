@@ -118,6 +118,11 @@ public interface FriendsOnMapConfig extends Config {
     return "https://runelite.sololegends.com/location/report";
   }
 
+  @ConfigItem(position = 24, section = custom_section, keyName = "friend_server_loc_api", name = "Server Locations API", description = "URL to pull JSON set of locations from a server")
+  default String locationsLink() {
+    return "https://runelite.sololegends.com/locations";
+  }
+
   // DEBUGGING
   @ConfigItem(position = 31, section = debug_section, keyName = "show_self_location_card", name = "Show your location card", description = "Shows your tracked location card at the top left of the game window")
   default boolean yourLocation() {

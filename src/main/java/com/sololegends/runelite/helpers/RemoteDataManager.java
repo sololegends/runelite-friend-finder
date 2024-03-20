@@ -8,6 +8,7 @@ import javax.inject.Inject;
 
 import com.google.gson.*;
 import com.sololegends.runelite.*;
+import com.sololegends.runelite.data.WorldRegions;
 import com.sololegends.runelite.helpers.WorldLocations.WorldSurface;
 import com.sololegends.runelite.skills.Health;
 import com.sololegends.runelite.skills.Prayer;
@@ -56,7 +57,6 @@ public class RemoteDataManager {
         @Override
         public void onFailure(Call call, IOException e) {
           update.error("Failed to call API");
-          report_in_progress = false;
         }
 
         @Override
@@ -66,16 +66,86 @@ public class RemoteDataManager {
           }
 
           if (resp.code() == 200) {
-            update.error("Location reported!");
-            report_in_progress = false;
             return;
           }
-          update.error("Failed to report!");
-          report_in_progress = false;
         }
       });
     } catch (IllegalArgumentException e) {
-      update.error("Config Error!");
+    }
+  }
+
+  public void getServerLocations(UpdateFlow update) {
+    try {
+      Request.Builder req_builder = new Request.Builder()
+          .url(config.locationsLink())
+          .get();
+
+      // Handle APi key, if present
+      if (!config.friendsAPIKey().isBlank()) {
+        req_builder.header("Authorization", "Bearer " + config.friendsAPIKey());
+      }
+
+      http_client.newCall(req_builder.build()).enqueue(new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+          update.error("Failed to call locations API");
+        }
+
+        @Override
+        public void onResponse(Call call, Response resp) throws IOException {
+          if (resp.body() == null) {
+            update.error("No response body");
+            return;
+          }
+
+          if (resp.code() == 200) {
+            JsonElement arr = new JsonParser().parse(resp.body().string());
+            // Process retrieved locations
+            if (arr.isJsonArray()) {
+              JsonArray locations = arr.getAsJsonArray();
+              if (locations != null && locations.size() > 0) {
+                // Add new points
+                Iterator<JsonElement> iter = locations.iterator();
+                while (iter.hasNext()) {
+                  JsonElement e = iter.next();
+                  if (!e.isJsonObject()) {
+                    continue;
+                  }
+
+                  JsonObject f = e.getAsJsonObject();
+                  // Validate the friend object
+                  try {
+                    if (f.has("x") && f.has("y") && f.has("z") &&
+                        f.has("location") && f.has("region") && f.has("instance")) {
+
+                      int x = f.get("x").getAsInt();
+                      int y = f.get("y").getAsInt();
+                      int region = f.get("region").getAsInt();
+                      int instance = f.get("instance").getAsInt();
+                      if (instance != -1) {
+                        region = instance;
+                      }
+                      String location = f.get("location").getAsString();
+
+                      WorldRegions.addRegion(WorldRegions.surface(location, x, y, WorldRegions.fromBounds(0, 0, 0, 0)),
+                          region);
+                    }
+                  } catch (ClassCastException cce) {
+                    // Nothing, just ignore the location
+                  }
+
+                }
+              }
+
+            }
+            return;
+          }
+          resp.body().close();
+          update.error("Failed to retrieve server registered locations!");
+        }
+      });
+    } catch (IllegalArgumentException e) {
+      update.error("Server locations API config Error!");
     }
   }
 
