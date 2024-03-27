@@ -139,7 +139,9 @@ public class RemoteDataManager {
                       }
                       String location = f.get("location").getAsString();
 
-                      WorldRegions.addRegion(WorldRegions.surface(location, x, y, WorldRegions.fromBounds(0, 0, 0, 0)),
+                      WorldRegions.addRegion(
+                          WorldRegions.surface(location, x, y, WorldRegions.fromBounds(0, 0, 0, 0)),
+                          !config.debugMode(),
                           region);
                     }
                   } catch (ClassCastException cce) {

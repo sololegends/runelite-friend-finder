@@ -139,6 +139,11 @@ public interface FriendsOnMapConfig extends Config {
     return false;
   }
 
+  @ConfigItem(position = 34, section = debug_section, keyName = "debug_mode", name = "Debug Mode", description = "Adds extra debugging data to the runelite logs")
+  default boolean debugMode() {
+    return false;
+  }
+
   @ConfigItem(keyName = "fake_friends", name = "", description = "")
   void fakeFriends(boolean fake_friends);
 
