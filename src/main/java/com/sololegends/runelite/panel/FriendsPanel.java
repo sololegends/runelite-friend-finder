@@ -120,6 +120,15 @@ public class FriendsPanel extends PluginPanel {
           }
 
         });
+        // Reset no matter what
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+          @Override
+          public void run() {
+            location_input.setText("");
+            submit.setText(SUBMIT_TEXT);
+          }
+        }, 10_000l);
         // LinkBrowser.browse(config.reportLink());
       }
     });

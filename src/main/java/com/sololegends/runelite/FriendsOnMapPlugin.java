@@ -13,7 +13,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.inject.Provides;
 import com.sololegends.runelite.helpers.RemoteDataManager;
-import com.sololegends.runelite.helpers.RemoteDataManager.UpdateFlow;
 import com.sololegends.runelite.overlay.OtherSurfacePlayersOverlay;
 import com.sololegends.runelite.overlay.PlayerLocationOverlayPanel;
 import com.sololegends.runelite.panel.FriendsPanel;
@@ -62,6 +61,10 @@ public class FriendsOnMapPlugin extends Plugin {
   private int hop_world_attempts_max = 10;
   private long hop_world_last = 0;
   private int hop_world_interval = 1_000;
+
+  // Every Hour
+  private static final long SERVER_UPDATE_INTERVAL = 3600_000;
+  private long LAST_SERVER_UPDATE = -1;
 
   // Player information
   private volatile FriendMapPoint focus_on = null;
@@ -136,21 +139,6 @@ public class FriendsOnMapPlugin extends Plugin {
     if (config.showSidebarIcon()) {
       clientToolbar.addNavigation(side_panel_btn);
     }
-
-    // Load locations from remote server
-    if (config.locationsLink() != null && !config.locationsLink().isBlank()) {
-      remote.getServerLocations(new UpdateFlow() {
-        @Override
-        public void success(String message) {
-          // Nothing here for the time being
-        }
-
-        @Override
-        public void error(String message) {
-          // Nothing here for the time being
-        }
-      });
-    }
   }
 
   @Override
@@ -187,24 +175,22 @@ public class FriendsOnMapPlugin extends Plugin {
     current_points.remove(fmp);
   }
 
+  public void updateServerLocations() {
+    remote.getServerLocations();
+  }
+
   public void addPoint(FriendMapPoint fmp) {
     if (current_points.contains(fmp)) {
       // Already here, just update it
       for (FriendMapPoint fp : current_points) {
         if (fp.equals(fmp)) {
-          fp.world = fmp.world;
-          fp.setHealth(fmp.getHealth());
-          fp.setPrayer(fmp.getPrayer());
-          fp.setWorldPoint(fmp.getWorldPoint());
-          fp.setRegion(fmp.getRegion());
-          fp.updated();
+          fp.update(fmp);
           updateFriendPointIcon(fp, true);
           return;
         }
       }
       return;
     }
-    System.out.println("Adding: " + fmp);
     map_point_manager.add(fmp);
     current_points.add(fmp);
   }
@@ -387,6 +373,11 @@ public class FriendsOnMapPlugin extends Plugin {
       }
       // Clear regardless
       focus_on = null;
+    }
+    // Server locations updates
+    if (System.currentTimeMillis() - LAST_SERVER_UPDATE > SERVER_UPDATE_INTERVAL) {
+      updateServerLocations();
+      LAST_SERVER_UPDATE = System.currentTimeMillis();
     }
     String msg = null;
     while ((msg = message_queue.poll()) != null) {

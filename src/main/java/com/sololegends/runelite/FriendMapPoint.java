@@ -34,6 +34,16 @@ public class FriendMapPoint extends WorldMapPoint {
     point_offset = image.getHeight() / 2;
   }
 
+  public void update(FriendMapPoint fmp) {
+    world = fmp.world;
+    setHealth(fmp.getHealth());
+    setPrayer(fmp.getPrayer());
+    setWorldPoint(fmp.getWorldPoint());
+    setRegion(fmp.getRegion());
+    setLocation(fmp.getLocation());
+    updated();
+  }
+
   public void updated() {
     updated = System.currentTimeMillis();
   }

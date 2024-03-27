@@ -25,7 +25,9 @@ public class WorldRegions {
   public static void addRegion(WorldSurface surface, int... region_ids) {
     for (int i : region_ids) {
       if (REGIONS.containsKey(i)) {
-        System.out.println("FFP => WARNING: Duplicate Region ID registered [" + surface.name + ":" + i + "]");
+        WorldSurface existing = REGIONS.get(i);
+        System.out.println(
+            "FFP => WARNING: Duplicate Region ID registered [" + existing.name + " -> " + surface.name + ":" + i + "]");
       }
       REGIONS.put(i, surface);
     }
@@ -33,6 +35,10 @@ public class WorldRegions {
 
   public static WorldSurface fromRegion(int region) {
     return REGIONS.get(region);
+  }
+
+  public static boolean hasRegion(int region) {
+    return REGIONS.containsKey(region);
   }
 
   static {
@@ -288,7 +294,7 @@ public class WorldRegions {
     // Varlamore
     addRegion(surface("Crypt of Ranul", 0, 0, fromBounds(0, 0, 0, 0)), 6804, 6805);
     addRegion(surface("Barracks Basement", 0, 0, fromBounds(0, 0, 0, 0)), 6549);
-    addRegion(surface("Cam Torum", 0, 0, fromBounds(0, 0, 0, 0)), 5525, 5781, 6037, 5780, 6036);
+    addRegion(surface("Cam Torum", 0, 0, fromBounds(0, 0, 0, 0)), 5780, 6036);
     addRegion(surface("Perilous Moons Antechamber", 0, 0, fromBounds(0, 0, 0, 0)), 5781, 5782);
     addRegion(surface("The Blood Moon", 0, 0, fromBounds(0, 0, 0, 0)), 5526);
     addRegion(surface("The Eclipse Moon", 0, 0, fromBounds(0, 0, 0, 0)), 6038);

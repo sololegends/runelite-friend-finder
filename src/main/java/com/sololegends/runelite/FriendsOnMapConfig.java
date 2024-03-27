@@ -113,12 +113,12 @@ public interface FriendsOnMapConfig extends Config {
     return "";
   }
 
-  @ConfigItem(position = 23, section = custom_section, keyName = "friend_report_api", name = "Reports Link", description = "Link to open when reporting a missing location")
+  @ConfigItem(position = 23, section = custom_section, keyName = "friend_report_api", name = "Reports Link", description = "API End-point for reporting Missing Locations")
   default String reportLink() {
     return "https://runelite.sololegends.com/location/report";
   }
 
-  @ConfigItem(position = 24, section = custom_section, keyName = "friend_server_loc_api", name = "Server Locations API", description = "URL to pull JSON set of locations from a server")
+  @ConfigItem(position = 24, section = custom_section, keyName = "friend_locations_api", name = "Server Locations", description = "API End-point for retrieving server-registered locations (blank to disable)")
   default String locationsLink() {
     return "https://runelite.sololegends.com/locations";
   }

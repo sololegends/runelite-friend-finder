@@ -4,5 +4,7 @@
 if [ -f ./gradle.properties ]; then
   . ./gradle.properties
 fi
-./gradlew full "$@"
-java -jar -ea build/libs/runelite-friend-finder-$sl_version.jar 
+cp src/test/java/com/sololegends/runelite/FriendsOnMapPluginTest.java src/main/java/com/sololegends/runelite/FriendsOnMapPluginTest.java
+./gradlew full
+java -jar -ea build/libs/$sl_archivesBaseName-$sl_version.jar "$@"
+rm src/main/java/com/sololegends/runelite/FriendsOnMapPluginTest.java
