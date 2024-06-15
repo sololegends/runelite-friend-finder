@@ -129,7 +129,6 @@ public class FriendsPanel extends PluginPanel {
             submit.setText(SUBMIT_TEXT);
           }
         }, 10_000l);
-        // LinkBrowser.browse(config.reportLink());
       }
     });
 
@@ -183,7 +182,7 @@ public class FriendsPanel extends PluginPanel {
         panel.update(friend, friend.getLocation());
         continue;
       }
-      FriendPanel panel = new FriendPanel(this, friend, health_icon, prayer_icon);
+      FriendPanel panel = new FriendPanel(this, plugin, friend, health_icon, prayer_icon);
       panel.addMouseListener(new MouseListener() {
         @Override
         public void mouseClicked(MouseEvent e) {

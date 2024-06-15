@@ -18,6 +18,7 @@ import net.runelite.client.ui.overlay.components.LineComponent;
 public class PlayerLocationOverlayPanel extends OverlayPanel {
 
   private FriendsOnMapConfig config;
+  private FriendsOnMapPlugin plugin;
   private Client client;
 
   @Inject
@@ -27,6 +28,7 @@ public class PlayerLocationOverlayPanel extends OverlayPanel {
     setPriority(Overlay.PRIORITY_LOW);
     this.config = config;
     this.client = client;
+    this.plugin = plugin;
   }
 
   @Override
@@ -35,7 +37,7 @@ public class PlayerLocationOverlayPanel extends OverlayPanel {
       WorldPoint player = client.getLocalPlayer().getWorldLocation();
       LocalPoint local = client.getLocalPlayer().getLocalLocation();
       int region_id = player.getRegionID();
-      if (client.isInInstancedRegion()) {
+      if (plugin.inInstancedRegion()) {
         region_id = WorldPoint.fromLocalInstance(client, local).getRegionID();
       }
       WorldSurface s = WorldLocations.getWorldSurface(region_id);

@@ -1,9 +1,6 @@
 package com.sololegends.runelite.overlay;
 
 import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.awt.event.MouseEvent;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 import java.util.*;
@@ -21,7 +18,6 @@ import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.worldmap.WorldMap;
 import net.runelite.client.ui.FontManager;
-import net.runelite.client.ui.JagexColors;
 import net.runelite.client.ui.overlay.*;
 import net.runelite.client.ui.overlay.worldmap.WorldMapOverlay;
 
@@ -43,7 +39,7 @@ public class OtherSurfacePlayersOverlay extends Overlay {
     this.config = config;
     setPosition(OverlayPosition.DYNAMIC);
     setPriority(Overlay.PRIORITY_HIGHEST);
-    setLayer(OverlayLayer.MANUAL);
+    setLayer(OverlayLayer.ABOVE_WIDGETS);
     drawAfterLayer(ComponentID.WORLD_MAP_MAPVIEW);
   }
 
@@ -63,6 +59,7 @@ public class OtherSurfacePlayersOverlay extends Overlay {
     WorldMap worldMap = client.getWorldMap();
 
     String draw_tip = null;
+    int draw_tip_region = -1;
 
     ArrayList<FriendMapPoint> points = new ArrayList<>(plugin.currentPoints());
     points.sort(new Comparator<FriendMapPoint>() {
@@ -85,6 +82,7 @@ public class OtherSurfacePlayersOverlay extends Overlay {
         // Draw tool tip stating world surface
         WorldSurface loc = f.getLocation();
         draw_tip = loc.name;
+        draw_tip_region = f.region;
       }
       y_offset += dim.getHeight() + 5;
     }
@@ -94,7 +92,7 @@ public class OtherSurfacePlayersOverlay extends Overlay {
     }
     // Render tool tip last so it is on top
     if (draw_tip != null) {
-      drawToolTip(g, draw_tip, mouse.getX(), 20 + mouse.getY());
+      plugin.drawToolTip(g, draw_tip, mouse.getX(), 20 + mouse.getY(), draw_tip_region);
     }
     return null;
   }
@@ -148,23 +146,6 @@ public class OtherSurfacePlayersOverlay extends Overlay {
     return new Dimension(dim.width + (int) bounds.getWidth() + 5, (int) bounds.getHeight());
   }
 
-  public void drawToolTip(Graphics2D g, String text, int x, int y) {
-    g.setFont(FontManager.getRunescapeFont());
-    FontMetrics fm = g.getFontMetrics();
-    Rectangle2D bounds = fm.getStringBounds(text, g);
-    // Add padding
-    Rectangle padded = new Rectangle(x, y, (int) bounds.getWidth() + 6, (int) bounds.getHeight() + 4);
-    g.setColor(JagexColors.TOOLTIP_BACKGROUND);
-    g.fill(padded);
-
-    g.setStroke(new BasicStroke(1));
-    g.setColor(JagexColors.TOOLTIP_BORDER);
-    g.draw(padded);
-
-    g.setColor(JagexColors.TOOLTIP_TEXT);
-    g.drawString(text, x + 3, y + 1 + (int) bounds.getHeight());
-  }
-
   /**
    * Gets a clip area which excludes the area of widgets which overlay the world
    * map.
@@ -195,78 +176,5 @@ public class OtherSurfacePlayersOverlay extends Overlay {
     // subclasses of rectangle2d,
     // so use that as the clip shape if possible
     return subtracted ? clipArea : baseRectangle;
-  }
-
-  private void drawCrosshair(Graphics2D g, Point mouse, Rectangle bounds) {
-    g.setColor(Color.RED);
-    g.setStroke(new BasicStroke(1));
-    g.drawLine(mouse.getX(), bounds.y, mouse.getX(), bounds.y + bounds.height);
-    g.drawLine(bounds.x, mouse.getY(), bounds.x + bounds.width, mouse.getY());
-  }
-
-  private void drawMapGrid(Graphics2D graphics, int grid_size, Color grid_color) {
-    final int gridTruncate = ~(grid_size - 1);
-
-    Widget map = client.getWidget(ComponentID.WORLD_MAP_MAPVIEW);
-
-    if (map == null) {
-      return;
-    }
-    graphics.setStroke(new BasicStroke(1));
-
-    WorldMap ro = client.getWorldMap();
-    Float pixelsPerTile = ro.getWorldMapZoom();
-    Rectangle worldMapRect = map.getBounds();
-    graphics.setClip(worldMapRect);
-
-    int widthInTiles = (int) Math.ceil(worldMapRect.getWidth() / pixelsPerTile);
-    int heightInTiles = (int) Math.ceil(worldMapRect.getHeight() / pixelsPerTile);
-
-    Point worldMapPosition = ro.getWorldMapPosition();
-
-    // Offset in tiles from anchor sides
-    int yTileMin = worldMapPosition.getY() - heightInTiles / 2;
-    int xRegionMin = (worldMapPosition.getX() - widthInTiles / 2) & gridTruncate;
-    int xRegionMax = ((worldMapPosition.getX() + widthInTiles / 2) & gridTruncate) + grid_size;
-    int yRegionMin = (yTileMin & gridTruncate);
-    int yRegionMax = ((worldMapPosition.getY() + heightInTiles / 2) & gridTruncate) + grid_size;
-    int regionPixelSize = (int) Math.ceil(grid_size * pixelsPerTile);
-    Point mouse = client.getMouseCanvasPosition();
-    String draw_tip = null, copy = "";
-    int tip_x = 0, tip_y = 0;
-    graphics.setColor(grid_color);
-
-    boolean render_lines = grid_size * pixelsPerTile >= 3;
-    for (int x = xRegionMin; x < xRegionMax; x += grid_size) {
-      for (int y = yRegionMin; y < yRegionMax; y += grid_size) {
-        int yTileOffset = -(yTileMin - y);
-        int xTileOffset = x + widthInTiles / 2 - worldMapPosition.getX();
-
-        int xPos = ((int) (xTileOffset * pixelsPerTile)) + (int) worldMapRect.getX();
-        int yPos = (worldMapRect.height - (int) (yTileOffset * pixelsPerTile)) + (int) worldMapRect.getY();
-        // Offset y-position by a single region to correct for drawRect starting from
-        // the top
-        yPos -= regionPixelSize;
-
-        if (render_lines) {
-          graphics.drawRect(xPos, yPos, regionPixelSize, regionPixelSize);
-        }
-        if (new Rectangle(xPos, yPos, regionPixelSize, regionPixelSize).contains(mouse.getX(), mouse.getY())) {
-          draw_tip = "x: " + xPos + ", y: " + yPos + ", rX: " + x + " , rY: " + y;
-          tip_x = xPos;
-          tip_y = yPos;
-          copy = x + ", " + y;
-        }
-      }
-    }
-    if (draw_tip != null) {
-      if (client.getMouseCurrentButton() == MouseEvent.BUTTON1 || client
-          .getMouseCurrentButton() == MouseEvent.BUTTON2) {
-        // Copy the data to clipboard
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        clipboard.setContents(new StringSelection(copy), null);
-      }
-      drawToolTip(graphics, draw_tip, tip_x, tip_y + 20);
-    }
   }
 }

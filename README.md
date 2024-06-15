@@ -5,15 +5,41 @@ A simple plugin for showing your friends on your world map and visa versa
 - Send your locations to those on your friends list and receive their location back 
   - NOTE: Both you AND your friend must have the plugin for this to work.
 - (Configurable) Double click your friend's point on the map to hop to their world
-- Configurable report interval. Have low bandwidth? Set the plugin to only report and update every 30 seconds!
-- Configurable point colors and sizes
-- See your friends health and prayer statuses in a handy sidebar
+- (Configurable) report interval. Have low bandwidth? Set the plugin to only report and update every 30 seconds!
+- (Configurable) point colors and sizes
+- (Configurable) See your friends health and prayer statuses as well as location names in a handy sidebar
+  - Click their name with the world map open to focus their position, if on the same view plane
+- Report missing location names directly to the server for review
+- Ability to set a custom API server if you wish to run your own
+  - NOTE: You will have to get your friends to also switch to that server to see everyone
 
 ![image](docs/friend-on-map-example.png)
 
 Your in-game location will be sent to an external server where it will be store as a single data point for all your friends to pull down and see. Your location is only visible to people on your RuneScape friends list, unless you have a person set as your friend they *cannot* see your location.  
 
 The way the location retrieval of your friends works is they would have to have the this plugin and be also sending their their location to the server for your client to retrieve and then display. Both people must have the plugin for this to work.
+
+## Privacy Information
+- Yes, this plugin reaches out to a server I setup to store and deliver your in-game location to and from your friends
+- No location history data is stored
+- _Absolutely NO_ personal information is sent to the server whatsoever. 
+- Your public IP address may briefly be stored in memory for use in DoS protection and general server security.
+- Your public IP address is _never_ associated with your runescape account
+- All location data is removed after 90 seconds from last report.
+- **Only** players on your friend list, who also have the plugin, can view your in-game location data
+
+### What is sent to the server
+- Your OSRS Username
+- Your current player location in OSRS
+- Your current HP and prayer level
+- Your current world number
+- Your friends list to build the permissions scheme for your location data
+
+### What data about you is sent to your friends
+- Your OSRS Username
+- Your current player location in OSRS
+- Your current HP and prayer level
+- Your current world number
 
 ## API Server 
 The current API server used by default is one developed and run by me. However, If you so desire you can setup a private API for this plugin fairly easily. Here is how. 
@@ -110,10 +136,3 @@ The current API server used by default is one developed and run by me. However, 
     "l": string
   }
   ```   
-
-## Privacy Information
-- Yes, this plugin reaches out to a server I setup to store and deliver your runescape location to and from your friends
-- No location history data is stored
-- Absolutely _NO_ personal information is sent to the server whatsoever. 
-- Your public IP address may briefly be stored in memory for use in DoS protection and general server security.  
-- All location data is removed after 90 seconds from last report.

@@ -1,12 +1,13 @@
 package com.sololegends.runelite.panel;
 
-import java.awt.Color;
+import java.awt.*;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import com.sololegends.runelite.FriendMapPoint;
+import com.sololegends.runelite.FriendsOnMapPlugin;
 import com.sololegends.runelite.helpers.WorldLocations.WorldSurface;
 import com.sololegends.runelite.skills.*;
 
@@ -28,15 +29,20 @@ public class FriendPanel extends JPanel {
   TitledBorder border = new TitledBorder("");
   final FriendsPanel parent;
   final String name;
+  FriendMapPoint friend;
+  final FriendsOnMapPlugin plugin;
   long updated = System.currentTimeMillis();
 
-  public FriendPanel(FriendsPanel parent, FriendMapPoint friend, ImageIcon h_icon, ImageIcon p_icon) {
+  public FriendPanel(FriendsPanel parent, FriendsOnMapPlugin plugin, FriendMapPoint friend, ImageIcon h_icon,
+      ImageIcon p_icon) {
     border = new TitledBorder(
         BorderFactory.createEtchedBorder(EtchedBorder.RAISED),
         friend.friend);
     name = friend.friend;
     this.setBorder(border);
     this.parent = parent;
+    this.plugin = plugin;
+    this.friend = friend;
 
     GroupLayout layout = new GroupLayout(this);
     this.setLayout(layout);
@@ -70,7 +76,24 @@ public class FriendPanel extends JPanel {
     layout.setVerticalGroup(v_group);
   }
 
+  public void mouseHoverCheck(Graphics2D g) {
+    Point mouse = this.getMousePosition();
+    if (mouse != null && mouse.getY() < 25 && plugin.shiftPressed()) {
+      String tool_tip = friend.friend + " -- World: " + friend.world;
+      plugin.drawToolTip(g, tool_tip, 0, 20 + 0, friend.region);
+    }
+  }
+
+  @Override
+  public void paint(Graphics g) {
+    super.paint(g);
+    if (g instanceof Graphics2D) {
+      mouseHoverCheck((Graphics2D) g);
+    }
+  }
+
   public void update(FriendMapPoint friend, WorldSurface surface) {
+    this.friend = friend;
     updated = System.currentTimeMillis();
     Health h_skill = friend.getHealth();
     Prayer p_skill = friend.getPrayer();

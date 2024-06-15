@@ -1,6 +1,7 @@
 package com.sololegends.runelite;
 
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,8 +24,7 @@ import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
-import net.runelite.api.widgets.ComponentID;
-import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.*;
 import net.runelite.api.worldmap.WorldMap;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatColorType;
@@ -58,9 +58,9 @@ public class FriendsOnMapPlugin extends Plugin {
   private long last_update = 0;
   private net.runelite.api.World hop_world = null;
   private int hop_world_attempts = 0;
-  private int hop_world_attempts_max = 10;
+  private int hop_world_attempts_max = 3;
   private long hop_world_last = 0;
-  private int hop_world_interval = 1_000;
+  private int hop_world_interval = 1_500;
 
   // Every Hour
   private static final long SERVER_UPDATE_INTERVAL = 3600_000;
@@ -193,6 +193,11 @@ public class FriendsOnMapPlugin extends Plugin {
     }
     map_point_manager.add(fmp);
     current_points.add(fmp);
+  }
+
+  public boolean inInstancedRegion() {
+    WorldView wv = client.getTopLevelWorldView();
+    return wv == null ? false : wv.isInstance();
   }
 
   public void updatePanel() {
@@ -386,14 +391,20 @@ public class FriendsOnMapPlugin extends Plugin {
     }
     if (hop_world != null && hop_world_attempts < hop_world_attempts_max
         && System.currentTimeMillis() - hop_world_last > hop_world_interval) {
+      System.out.println("Attempting hop world: " + hop_world.getId() + " > " + hop_world.getAddress());
       hop_world_last = System.currentTimeMillis();
-      hop_world_attempts++;
-      if (client.getWorld() != hop_world.getId()) {
-        client.hopToWorld(hop_world);
+
+      if (client.getWidget(ComponentID.WORLD_SWITCHER_WORLD_LIST) == null) {
+        client.openWorldHopper();
       } else {
-        hop_world = null;
+        hop_world_attempts++;
+        if (client.getWorld() != hop_world.getId()) {
+          client.hopToWorld(hop_world);
+        } else {
+          hop_world = null;
+        }
       }
-    } else if (hop_world != null) {
+    } else if (hop_world != null && hop_world_attempts >= hop_world_attempts_max) {
       hop_world = null;
     }
     if (System.currentTimeMillis() - last_update > config.updateInterval().interval() || info_updated) {
@@ -427,7 +438,7 @@ public class FriendsOnMapPlugin extends Plugin {
       // Region of instance or world
       LocalPoint local = player.getLocalLocation();
       int region_id = player_location.getRegionID();
-      if (client.isInInstancedRegion()) {
+      if (inInstancedRegion()) {
         region_id = WorldPoint.fromLocalInstance(client, local).getRegionID();
       }
       payload.addProperty("r", region_id);
@@ -462,7 +473,7 @@ public class FriendsOnMapPlugin extends Plugin {
     LocalPoint local = player.getLocalLocation();
     int region_id = player_location.getRegionID();
     int instance_id = -1;
-    if (client.isInInstancedRegion()) {
+    if (inInstancedRegion()) {
       instance_id = WorldPoint.fromLocalInstance(client, local).getRegionID();
     }
     payload.addProperty("r", region_id);
@@ -564,5 +575,30 @@ public class FriendsOnMapPlugin extends Plugin {
   @Provides
   FriendsOnMapConfig provideConfig(ConfigManager configManager) {
     return configManager.getConfig(FriendsOnMapConfig.class);
+  }
+
+  public boolean shiftPressed() {
+    return client.isKeyPressed(KeyCode.KC_SHIFT);
+  }
+
+  public void drawToolTip(Graphics2D g, String text, int x, int y, int region) {
+    if (region != -1 && client.isKeyPressed(KeyCode.KC_SHIFT)) {
+      // Add region prefix
+      text = "r:" + region + " -- " + text;
+    }
+    g.setFont(FontManager.getRunescapeFont());
+    FontMetrics fm = g.getFontMetrics();
+    Rectangle2D bounds = fm.getStringBounds(text, g);
+    // Add padding
+    Rectangle padded = new Rectangle(x, y, (int) bounds.getWidth() + 6, (int) bounds.getHeight() + 4);
+    g.setColor(JagexColors.TOOLTIP_BACKGROUND);
+    g.fill(padded);
+
+    g.setStroke(new BasicStroke(1));
+    g.setColor(JagexColors.TOOLTIP_BORDER);
+    g.draw(padded);
+
+    g.setColor(JagexColors.TOOLTIP_TEXT);
+    g.drawString(text, x + 3, y + 1 + (int) bounds.getHeight());
   }
 }
