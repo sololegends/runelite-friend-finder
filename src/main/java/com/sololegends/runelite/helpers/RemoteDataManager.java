@@ -290,8 +290,9 @@ public class RemoteDataManager {
             }
           }
 
-        } catch (MalformedJsonException e) {
+        } catch (JsonSyntaxException e) {
           System.err.println("FFP => Malformed JSON from server, likely offline");
+          in_progress = false;
         }
         // * If we need to render in some fake friends
         if (config.fakeFriends()) {
