@@ -14,11 +14,13 @@ import com.sololegends.runelite.helpers.WorldLocations.WorldSurface;
 import com.sololegends.runelite.skills.Health;
 import com.sololegends.runelite.skills.Prayer;
 
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Point;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import okhttp3.*;
 
+@Slf4j
 public class RemoteDataManager {
 
   private volatile boolean in_progress = false;
@@ -107,7 +109,7 @@ public class RemoteDataManager {
           }
 
           if (resp.code() != 200) {
-            System.err.println("FFP => Failed to retrieve server registered locations [" + resp.code() + "]");
+            log.error("FFP => Failed to retrieve server registered locations [" + resp.code() + "]");
             return;
           }
           try {
@@ -153,13 +155,13 @@ public class RemoteDataManager {
 
             }
           } catch (MalformedJsonException e) {
-            System.err.println("FFP => Failed to retrieve server registered locations");
+            log.error("FFP => Failed to retrieve server registered locations");
             e.printStackTrace();
           }
         }
       });
     } catch (IllegalArgumentException e) {
-      System.err.println("FFP => Failed to retrieve server registered locations");
+      log.error("FFP => Failed to retrieve server registered locations");
       e.printStackTrace();
     }
   }
@@ -180,7 +182,7 @@ public class RemoteDataManager {
         req_builder.header("Authorization", "Bearer " + config.friendsAPIKey());
       }
     } catch (IllegalArgumentException e) {
-      System.err.println("Failed to setup url: " + e.getMessage());
+      log.error("Failed to setup url: " + e.getMessage());
       e.printStackTrace();
       return;
     }
@@ -291,7 +293,7 @@ public class RemoteDataManager {
           }
 
         } catch (JsonSyntaxException e) {
-          System.err.println("FFP => Malformed JSON from server, likely offline");
+          log.error("FFP => Malformed JSON from server, likely offline");
           in_progress = false;
         }
         // * If we need to render in some fake friends

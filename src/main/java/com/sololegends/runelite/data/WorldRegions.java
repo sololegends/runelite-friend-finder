@@ -28,12 +28,6 @@ public class WorldRegions {
 
   public static void addRegion(WorldSurface surface, boolean suppress_warning, int... region_ids) {
     for (int i : region_ids) {
-      if (REGIONS.containsKey(i) && !suppress_warning) {
-        WorldSurface existing = REGIONS.get(i);
-        System.out.println(
-            "FFP => WARNING: Duplicate Region ID registered [" + existing.name + " -> " + surface.name + ":" + i
-                + "]");
-      }
       REGIONS.put(i, surface);
     }
   }
