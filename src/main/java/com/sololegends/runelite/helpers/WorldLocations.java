@@ -1,12 +1,8 @@
 package com.sololegends.runelite.helpers;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.gson.*;
 import com.sololegends.runelite.data.WorldRegions;
 
 import net.runelite.api.coords.WorldArea;
@@ -354,34 +350,6 @@ public class WorldLocations {
         }
       }
       return false;
-    }
-  }
-
-  // Generate java code from json file
-  public static final void main(String args[]) {
-    try {
-      InputStream wis = WorldLocations.class.getResourceAsStream("/map_data.json");
-      JsonElement ele = new JsonParser().parse(new String(wis.readAllBytes(), StandardCharsets.UTF_8));
-      Iterator<JsonElement> arr = ele.getAsJsonArray().iterator();
-      StringBuilder sb = new StringBuilder("static {");
-      while (arr.hasNext()) {
-        JsonElement e = arr.next();
-        JsonArray bounds = e.getAsJsonObject().get("bounds").getAsJsonArray();
-        JsonArray b1 = bounds.get(0).getAsJsonArray();
-        JsonArray b2 = bounds.get(1).getAsJsonArray();
-        sb.append("\r\n  WORLD_AREAS.put(\"" + e.getAsJsonObject().get("name").getAsString()
-            + "\", fromBounds("
-            + b1.get(0).getAsInt() + ", "
-            + b1.get(1).getAsInt() + ", "
-            + b2.get(0).getAsInt() + ", "
-            + b2.get(1).getAsInt() + "));");
-      }
-      sb.append("\r\n}");
-      System.out.println(sb.toString());
-    } catch (JsonSyntaxException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
     }
   }
 
