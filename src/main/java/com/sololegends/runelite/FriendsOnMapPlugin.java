@@ -3,6 +3,7 @@ package com.sololegends.runelite;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -24,7 +25,9 @@ import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
-import net.runelite.api.widgets.*;
+import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.VarbitID;
+import net.runelite.api.widgets.Widget;
 import net.runelite.api.worldmap.WorldMap;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatColorType;
@@ -71,6 +74,7 @@ public class FriendsOnMapPlugin extends Plugin {
   private volatile boolean info_updated = false;
   private int health_last;
   private int prayer_last;
+  private WorldPoint player_location_cache = null;
 
   // UI Elements
   private FriendsPanel panel;
@@ -200,6 +204,11 @@ public class FriendsOnMapPlugin extends Plugin {
     return wv == null ? false : wv.isInstance();
   }
 
+  public Scene getScene() {
+    WorldView wv = client.getTopLevelWorldView();
+    return wv == null ? null : wv.getScene();
+  }
+
   public void updatePanel() {
     SwingUtilities.invokeLater(() -> panel.update());
   }
@@ -244,6 +253,10 @@ public class FriendsOnMapPlugin extends Plugin {
     }
   }
 
+  public WorldPoint getPlayerLocationCache() {
+    return player_location_cache;
+  }
+
   private boolean isWithin(Point mouse_pos, WorldPoint point) {
     final WorldMap map = client.getWorldMap();
     final float zoom = map.getWorldMapZoom();
@@ -264,7 +277,7 @@ public class FriendsOnMapPlugin extends Plugin {
 
   private boolean isMouseInWorldMap() {
     final Point mousePos = client.getMouseCanvasPosition();
-    final Widget view = client.getWidget(ComponentID.WORLD_MAP_MAPVIEW);
+    final Widget view = client.getWidget(InterfaceID.Worldmap.MAP_CONTAINER);
     if (view == null) {
       return false;
     }
@@ -391,10 +404,9 @@ public class FriendsOnMapPlugin extends Plugin {
     }
     if (hop_world != null && hop_world_attempts < hop_world_attempts_max
         && System.currentTimeMillis() - hop_world_last > hop_world_interval) {
-      System.out.println("Attempting hop world: " + hop_world.getId() + " > " + hop_world.getAddress());
       hop_world_last = System.currentTimeMillis();
 
-      if (client.getWidget(ComponentID.WORLD_SWITCHER_WORLD_LIST) == null) {
+      if (client.getWidget(InterfaceID.Worldswitcher.LIST) == null) {
         client.openWorldHopper();
       } else {
         hop_world_attempts++;
@@ -407,6 +419,14 @@ public class FriendsOnMapPlugin extends Plugin {
     } else if (hop_world != null && hop_world_attempts >= hop_world_attempts_max) {
       hop_world = null;
     }
+    // Update cache
+    Player player = client.getLocalPlayer();
+    if (player != null) {
+      player_location_cache = player.getWorldLocation();
+      if (client.getVarbitValue(VarbitID.SAILING_BOARDED_BOAT) == 1) {
+        player_location_cache = fromSailingLocal(player.getLocalLocation());
+      }
+    }
     if (System.currentTimeMillis() - last_update > config.updateInterval().interval() || info_updated) {
       // If friends chat set private don't send locations
       if (privateMode()) {
@@ -415,12 +435,11 @@ public class FriendsOnMapPlugin extends Plugin {
       info_updated = false;
       // USE FRIENDS API
       // Send player info to server
-      Player player = client.getLocalPlayer();
       if (player == null) {
         // Set updated time
         last_update = System.currentTimeMillis();
       }
-      WorldPoint player_location = player.getWorldLocation();
+      WorldPoint player_location = player_location_cache;
       Friend[] friends = client.getFriendContainer().getMembers();
       // Build the payload
       JsonObject payload = new JsonObject();
@@ -455,6 +474,23 @@ public class FriendsOnMapPlugin extends Plugin {
     }
   }
 
+  public WorldPoint fromSailingLocal(LocalPoint point) {
+    Scene scene = getScene();
+    Iterator<? extends WorldEntity> wei = client.getTopLevelWorldView().worldEntities().iterator();
+    LocalPoint boat_point = point;
+    while (wei.hasNext()) {
+      WorldEntity we = wei.next();
+      if (we.getWorldView().contains(point)) {
+        boat_point = we.transformToMainWorld(point);
+        break;
+      }
+    }
+    return new WorldPoint(
+        (boat_point.getX() >> Perspective.LOCAL_COORD_BITS) + scene.getBaseX(),
+        (boat_point.getY() >> Perspective.LOCAL_COORD_BITS) + scene.getBaseY(),
+        -1);
+  }
+
   public JsonObject getPlayerLocation() {
     // USE FRIENDS API
     JsonObject payload = new JsonObject();
@@ -463,7 +499,7 @@ public class FriendsOnMapPlugin extends Plugin {
     if (player == null) {
       return payload;
     }
-    WorldPoint player_location = player.getWorldLocation();
+    WorldPoint player_location = player_location_cache;
     // Build the payload
     payload.addProperty("x", player_location.getX());
     payload.addProperty("y", player_location.getY());

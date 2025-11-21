@@ -34,7 +34,7 @@ public class PlayerLocationOverlayPanel extends OverlayPanel {
   @Override
   public Dimension render(Graphics2D graphics) {
     if (config.yourLocation()) {
-      WorldPoint player = client.getLocalPlayer().getWorldLocation();
+      WorldPoint player = plugin.getPlayerLocationCache();
       LocalPoint local = client.getLocalPlayer().getLocalLocation();
       int region_id = player.getRegionID();
       if (plugin.inInstancedRegion()) {

@@ -14,7 +14,7 @@ import net.runelite.api.Client;
 import net.runelite.api.Point;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.widgets.ComponentID;
+import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.worldmap.WorldMap;
 import net.runelite.client.ui.FontManager;
@@ -40,12 +40,12 @@ public class OtherSurfacePlayersOverlay extends Overlay {
     setPosition(OverlayPosition.DYNAMIC);
     setPriority(Overlay.PRIORITY_HIGHEST);
     setLayer(OverlayLayer.ABOVE_WIDGETS);
-    drawAfterLayer(ComponentID.WORLD_MAP_MAPVIEW);
+    drawAfterLayer(InterfaceID.Worldmap.MAP_CONTAINER);
   }
 
   @Override
   public Dimension render(Graphics2D g) {
-    Widget parent = client.getWidget(ComponentID.WORLD_MAP_MAPVIEW);
+    Widget parent = client.getWidget(InterfaceID.Worldmap.MAP_CONTAINER);
     if (parent == null || parent.isHidden()) {
       return null;
     }
@@ -99,7 +99,7 @@ public class OtherSurfacePlayersOverlay extends Overlay {
 
   private void drawAreas(Graphics2D g, WorldMap map) {
     Set<WorldSurface> surfaces = WorldLocations.getSurfaces();
-    Widget map_w = client.getWidget(ComponentID.WORLD_MAP_MAPVIEW);
+    Widget map_w = client.getWidget(InterfaceID.Worldmap.MAP_CONTAINER);
 
     if (map_w == null) {
       return;
@@ -156,8 +156,8 @@ public class OtherSurfacePlayersOverlay extends Overlay {
    *         of visible widgets overlaying the world map clipped from it.
    */
   private Shape getWorldMapClipArea(Rectangle baseRectangle) {
-    final Widget overview = client.getWidget(ComponentID.WORLD_MAP_OVERVIEW_MAP);
-    final Widget surfaceSelector = client.getWidget(ComponentID.WORLD_MAP_SURFACE_SELECTOR);
+    final Widget overview = client.getWidget(InterfaceID.Worldmap.OVERVIEW_CONTAINER);
+    final Widget surfaceSelector = client.getWidget(InterfaceID.Worldmap.MAPLIST_BOX);
 
     Area clipArea = new Area(baseRectangle);
     boolean subtracted = false;
