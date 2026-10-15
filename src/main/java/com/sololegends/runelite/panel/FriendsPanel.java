@@ -12,6 +12,7 @@ import javax.swing.border.EmptyBorder;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.sololegends.runelite.*;
+import com.sololegends.runelite.data.WorldRegions;
 import com.sololegends.runelite.helpers.RemoteDataManager;
 import com.sololegends.runelite.helpers.RemoteDataManager.UpdateFlow;
 
@@ -28,6 +29,7 @@ public class FriendsPanel extends PluginPanel {
   private final JComponent friends = new DragAndDropReorderPane();
   private final Map<String, Component> friend_components = new ConcurrentHashMap<>();
 
+  private JTextField region_id_input = null;
   private final ImageIcon health_icon;
   private final ImageIcon prayer_icon;
 
@@ -73,8 +75,12 @@ public class FriendsPanel extends PluginPanel {
 
     // REPORT ACTION PANEL
 
+    final JPanel report_region_panel = new JPanel(new BorderLayout());
     final JPanel report_action_panel = new JPanel(new BorderLayout());
 
+    if (!config.friendsAPIKey().isBlank()) {
+      region_id_input = getTextField(report_region_panel, "Region ID");
+    }
     JTextField location_input = getTextField(report_action_panel, "Your Location");
     final String SUBMIT_TEXT = "Report Missing Location";
     final JButton submit = new JButton(SUBMIT_TEXT);
@@ -89,6 +95,13 @@ public class FriendsPanel extends PluginPanel {
         String location = location_input.getText();
         // Build Payload
         JsonObject payload = plugin.getPlayerLocation();
+        if (region_id_input != null && !region_id_input.getText().isBlank()) {
+          payload.addProperty("r", region_id_input.getText());
+          payload.addProperty("x", 0);
+          payload.addProperty("y", 0);
+          payload.addProperty("z", 0);
+          payload.addProperty("i", -1);
+        }
         payload.addProperty("l", location);
         // Build and send the request
         remote.sendReport(payload, new UpdateFlow() {
@@ -96,13 +109,26 @@ public class FriendsPanel extends PluginPanel {
           public void success(String message) {
             submit.setText(message);
             location_input.setText("");
+            if (region_id_input != null) {
+              region_id_input.setText("");
+            }
+            if (!config.friendsAPIKey().isBlank()) {
+              WorldRegions.addRegion(
+                  WorldRegions.surface(
+                      location,
+                      payload.get("x").getAsInt(),
+                      payload.get("y").getAsInt(),
+                      WorldRegions.fromBounds(0, 0, 0, 0)),
+                  true,
+                  payload.get("r").getAsInt());
+            }
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
               @Override
               public void run() {
                 submit.setText(SUBMIT_TEXT);
               }
-            }, 10_000l);
+            }, config.friendsAPIKey().isBlank() ? 10_000l : 2_000l);
 
           }
 
@@ -115,7 +141,7 @@ public class FriendsPanel extends PluginPanel {
               public void run() {
                 submit.setText(SUBMIT_TEXT);
               }
-            }, 10_000l);
+            }, config.friendsAPIKey().isBlank() ? 10_000l : 2_000l);
 
           }
 
@@ -128,7 +154,7 @@ public class FriendsPanel extends PluginPanel {
             location_input.setText("");
             submit.setText(SUBMIT_TEXT);
           }
-        }, 10_000l);
+        }, config.friendsAPIKey().isBlank() ? 10_000l : 2_000l);
       }
     });
 
@@ -141,6 +167,7 @@ public class FriendsPanel extends PluginPanel {
     report_panel.add(Box.createRigidArea(new Dimension(0, 5)));
     report_panel.add(report_info_panel);
     report_panel.add(Box.createRigidArea(new Dimension(0, 10)));
+    report_panel.add(report_region_panel);
     report_panel.add(report_action_panel);
 
     // END

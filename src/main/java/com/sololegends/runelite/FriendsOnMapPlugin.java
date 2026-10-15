@@ -17,6 +17,7 @@ import com.google.inject.Provides;
 import com.sololegends.runelite.helpers.RemoteDataManager;
 import com.sololegends.runelite.overlay.OtherSurfacePlayersOverlay;
 import com.sololegends.runelite.overlay.PlayerLocationOverlayPanel;
+import com.sololegends.runelite.overlay.WorldMapRegionHelper;
 import com.sololegends.runelite.panel.FriendsPanel;
 
 import lombok.extern.slf4j.Slf4j;
@@ -114,6 +115,9 @@ public class FriendsOnMapPlugin extends Plugin {
   private OtherSurfacePlayersOverlay other_surface_overlay;
 
   @Inject
+  private WorldMapRegionHelper map_region_helper;
+
+  @Inject
   private PlayerLocationOverlayPanel player_location_overlay;
 
   @Inject
@@ -128,6 +132,7 @@ public class FriendsOnMapPlugin extends Plugin {
     mouse.registerMouseListener(mouse_listener);
     overlay_manager.add(other_surface_overlay);
     overlay_manager.add(player_location_overlay);
+    overlay_manager.add(map_region_helper);
 
     panel = injector.getInstance(FriendsPanel.class);
 
@@ -152,6 +157,7 @@ public class FriendsOnMapPlugin extends Plugin {
     mouse.unregisterMouseListener(mouse_listener);
     overlay_manager.remove(other_surface_overlay);
     overlay_manager.remove(player_location_overlay);
+    overlay_manager.remove(map_region_helper);
   }
 
   public void message(String msg) {
@@ -307,7 +313,6 @@ public class FriendsOnMapPlugin extends Plugin {
     rsWorld.setAddress(world.getAddress());
     rsWorld.setId(world.getId());
     rsWorld.setPlayerCount(world.getPlayers());
-    rsWorld.setLocation(world.getLocation());
     rsWorld.setTypes(WorldUtil.toWorldTypes(world.getTypes()));
     hop_world = rsWorld;
     hop_world_attempts = 0;
@@ -622,6 +627,7 @@ public class FriendsOnMapPlugin extends Plugin {
       // Add region prefix
       text = "r:" + region + " -- " + text;
     }
+    Font f = g.getFont();
     g.setFont(FontManager.getRunescapeFont());
     FontMetrics fm = g.getFontMetrics();
     Rectangle2D bounds = fm.getStringBounds(text, g);
@@ -636,5 +642,6 @@ public class FriendsOnMapPlugin extends Plugin {
 
     g.setColor(JagexColors.TOOLTIP_TEXT);
     g.drawString(text, x + 3, y + 1 + (int) bounds.getHeight());
+    g.setFont(f);
   }
 }

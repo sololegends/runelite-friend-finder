@@ -6,6 +6,10 @@ plugins {
 }
 
 repositories {
+  flatDir {
+      name 'project-libs'
+      dirs 'natives', 'libs'
+  }
   mavenLocal()
   maven {
     url = 'https://repo.runelite.net'

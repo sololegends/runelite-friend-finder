@@ -144,6 +144,11 @@ public interface FriendsOnMapConfig extends Config {
     return false;
   }
 
+  @ConfigItem(position = 35, section = debug_section, keyName = "map_regions", name = "Map Draw Regions", description = "Turns on drawing every region and whether they are tracked")
+  default boolean mapDrawRegions() {
+    return false;
+  }
+
   @ConfigItem(keyName = "fake_friends", name = "", description = "")
   void fakeFriends(boolean fake_friends);
 

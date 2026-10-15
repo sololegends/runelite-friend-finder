@@ -8,4 +8,5 @@ bin
 nbactions.xml
 nb-configuration.xml
 nbproject/
+natives
 src/main/java/com/sololegends/runelite/FriendsOnMapPluginTest.java
