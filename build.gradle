@@ -1,8 +1,5 @@
 plugins {
   id 'java'
-  id 'java-library'
-  id 'application'
-  id 'maven-publish'
 }
 
 repositories {
@@ -73,49 +70,6 @@ gradle.taskGraph.whenReady { taskGraph ->
           attributes 'Main-Class': sl_mainclass_full
       }
       archiveBaseName = sl_archivesBaseName
-    }
-  }
-}
-mainClassName = sl_mainclass
-
-
-publishing {
-  publications {
-    library(MavenPublication) {
-      groupId = 'com.sololegends'
-      artifactId = sl_archivesBaseName
-      version = project.version
-      from components.java
-      pom {
-        name = sl_name
-        description = sl_description
-        url = 'https://'+sl_git_url
-        developers {
-          developer {
-            id = 'sololegends'
-            name = 'Benjamin Zeigler'
-            email = 'benjamin@sololegends.com'
-          }
-        }
-        scm {
-          connection = 'scm:git:git://'+sl_git_url+'.git'
-          developerConnection = 'scm:git:ssh://'+sl_git_url+'.git'
-          url = 'https://'+sl_git_url+'/'
-        }
-      }
-    }
-  }
-  repositories {
-    maven {
-      url "${System.getenv('CI_SERVER_URL')}/api/v4/projects/${System.getenv('CI_PROJECT_ID')}/packages/maven"
-      name 'sl-gitlab'
-      credentials(HttpHeaderCredentials) {
-        name = "Private-Token"
-        value = System.getenv("MAVEN_REPO_TOKEN")
-      }
-      authentication {
-        header(HttpHeaderAuthentication)
-      }
     }
   }
 }
