@@ -155,14 +155,12 @@ public class RemoteDataManager {
 
             }
           } catch (MalformedJsonException e) {
-            log.error("FFP => Failed to retrieve server registered locations");
-            e.printStackTrace();
+            log.error("FFP => Failed to retrieve server registered locations", e);
           }
         }
       });
     } catch (IllegalArgumentException e) {
-      log.error("FFP => Failed to retrieve server registered locations");
-      e.printStackTrace();
+      log.error("FFP => Failed to retrieve server registered locations", e);
     }
   }
 
@@ -182,8 +180,7 @@ public class RemoteDataManager {
         req_builder.header("Authorization", "Bearer " + config.friendsAPIKey());
       }
     } catch (IllegalArgumentException e) {
-      log.error("Failed to setup url: " + e.getMessage());
-      e.printStackTrace();
+      log.error("Failed to setup url: ", e);
       return;
     }
     if (req_builder == null) {
